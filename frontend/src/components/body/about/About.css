@@ -1,0 +1,17 @@
+#first {
+    height: 50px;
+    width: 50px;
+}
+
+.center-cointener {
+    margin: auto;
+    width: 50%;
+    padding: 100px;
+}
+
+.aline {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}

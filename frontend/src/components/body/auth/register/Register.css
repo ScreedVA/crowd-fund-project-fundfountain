@@ -1,0 +1,19 @@
+div.register-div {
+  display: grid;
+  height: auto;
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: 100%;
+}
+
+.left-div,
+.right-div {
+  height: 100%;
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%; /* Ensures that both HTML and body elements take up the full viewport height */
+  margin: 0; /* Removes default margin to avoid unwanted spacing */
+  padding: 0;
+}
