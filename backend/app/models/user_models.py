@@ -20,7 +20,7 @@ class User(TimeStampModel):
 
     bridgeLocations = relationship("UserLocation", back_populates="user")
     refresh_token = relationship('RefreshToken', back_populates='user')
-    crowdFundProject = relationship('CrowdFundProject', back_populates='user')
+    crowd_fund_projects = relationship('CrowdFundProject', back_populates='user')
 
     def update_from_request(self, request: UpdateUserRequest):
         self.username = request.username

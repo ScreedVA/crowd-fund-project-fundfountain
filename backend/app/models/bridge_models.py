@@ -15,4 +15,11 @@ class UserLocation(Base):
 class CrowdFundProjectLocation(Base):
     __tablename__ = 'crowd_fund_project_location'
 
-    # crowd_fund_project_id = Column(Integer, ForeignKey(""))
+    crowd_fund_project_id = Column(Integer, ForeignKey("crowd_fund_project.id"), primary_key=True)
+    location_id = Column(Integer, ForeignKey("location.id"), primary_key=True)
+
+
+    crowd_fund_project = relationship("CrowdFundProject", back_populates="bridge_locations")
+    location = relationship("Location", back_populates="bridgeCrowdFundProjects")
+
+    

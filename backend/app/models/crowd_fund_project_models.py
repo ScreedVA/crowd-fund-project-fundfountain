@@ -28,11 +28,12 @@ class CrowdFundProject(TimeStampModel):
     valuation = Column(Integer, nullable=False)
     status = Column(SQLALchemyEnum(ProjectStatus), nullable=False)
     funding_model = Column(SQLALchemyEnum(FundingModel), nullable=False)
-    funding_progress = Column(Numeric(percision=3, scale=2), default=0)
+    funding_progress = Column(Integer, default=0)
 
     owner_id = Column(Integer, ForeignKey('user.id'))
 
-    user = relationship("User", back_populates="crowdFundProject")
+    user = relationship("User", back_populates="crowd_fund_projects")
+    bridge_locations = relationship("CrowdFundProjectLocation", back_populates="crowd_fund_project")
 
 
 
