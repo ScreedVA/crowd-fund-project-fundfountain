@@ -1,10 +1,9 @@
 from typing import Annotated
 from fastapi import FastAPI, Depends
-from routers import user_router
+from routers import user_router, auth_router, cfp_router
 from sessions import engine, Base, SessionLocal
 from sqlalchemy.orm import Session
 from models import User, Location, UserLocation
-from routers import auth_router
 from fastapi.middleware.cors import CORSMiddleware
 from datetime import datetime
 
@@ -27,6 +26,7 @@ Base.metadata.create_all(bind=engine)
 
 app.include_router(auth_router.router)
 app.include_router(user_router.router)
+app.include_router(cfp_router.router)
 
 
 def get_db():
