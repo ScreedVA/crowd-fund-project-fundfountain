@@ -3,7 +3,8 @@ from fastapi import FastAPI, Depends
 from routers import user_router, auth_router, cfp_router
 from sessions import engine, Base, SessionLocal
 from sqlalchemy.orm import Session
-from models import User, Location, UserLocation, CrowdFundProject, FundingModel, ProjectStatus
+from models import User, Location, UserLocation, CrowdFundProject
+from enums import FundingModel, ProjectStatus
 from fastapi.middleware.cors import CORSMiddleware
 from datetime import datetime
 app = FastAPI()
@@ -59,7 +60,7 @@ def add_default_data(db: db_dependency):
     ]
 
     default_crowd_fund_projects = [
-        CrowdFundProject(name="Eco-Friendly Backpack", description="A sustainable, eco-friendly backpack made from recycled materials, designed for urban travelers.", fund_goal=50000, current_fund=15000, start_date=datetime.strptime("2024-07-01", "%Y-%m-%d"), last_date=datetime.strptime("2024-10-01", "%Y-%m-%d"), total_units=1000, valuation=200000, status=ProjectStatus.ACTIVE, funding_model=FundingModel.FIXED_PRICE, funding_progress=0, owner_id=1),
+        CrowdFundProject(name="Eco-Friendly Backpack", description="A sustainable, eco-friendly backpack made from recycled materials, designed for urban travelers.", fund_goal=50000, current_fund=15000, start_date=datetime.strptime("2024-07-01", "%Y-%m-%d"), last_date=datetime.strptime("2024-10-01", "%Y-%m-%d"), total_units=1000, valuation=200000, status=ProjectStatus.ACTIVE, funding_model=FundingModel.FIXED_PRICE, funding_progress=0.0, owner_id=1),
 
         CrowdFundProject(name="Solar-Powered Portable Charger", description="A compact, solar-powered charger for mobile devices, ideal for outdoor use and emergencies.", fund_goal=75000, current_fund=45000, start_date=datetime.strptime("2024-06-01", "%Y-%m-%d"), last_date=datetime.strptime("2024-10-01", "%Y-%m-%d"), total_units=2000, valuation=300000, status=ProjectStatus.ACTIVE, funding_model=FundingModel.MICRO_INVESTMENT, funding_progress=0.3, owner_id=2),
 

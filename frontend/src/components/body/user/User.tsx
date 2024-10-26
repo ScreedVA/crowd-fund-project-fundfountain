@@ -20,13 +20,13 @@ function User() {
   return (
     <>
       <div className="user-container">
-        <div className="left">
+        <div className="user-left">
           <UserMenuBar
             sendIndexToFromUserMenuBar={handleMenuItemChange}
             selectOptions={selectOptions}
           />
         </div>
-        <div className="right">
+        <div className="user-right">
           <h1 style={{ textAlign: "center" }}>
             {selectOptions[selectedIndex]}
           </h1>

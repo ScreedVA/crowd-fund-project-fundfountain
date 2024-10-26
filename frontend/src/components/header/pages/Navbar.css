@@ -5,7 +5,7 @@
 .navbar {
   position: sticky;
   z-index: 1000;
-  background: #1e3a5f;
+  background: #000;
   font-family: "Calibri";
   padding-right: 15px;
   padding-left: 15px;
@@ -20,7 +20,7 @@
 .logo a {
   font-size: 35px;
   font-weight: 600;
-  color: #ade1fb;
+  color: white;
 }
 
 li {

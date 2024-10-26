@@ -1,6 +1,6 @@
 from pydantic import BaseModel, Field
 from typing import Optional
-from models import ProjectStatus, FundingModel
+from enums import ProjectStatus, FundingModel
 from .location_schemas import ReadLocationRequest
 
 
@@ -20,13 +20,13 @@ class CrowdFundProjectBaseModel(BaseModel):
     valuation: int 
     status: ProjectStatus
     funding_model: FundingModel = Field(None, alias="fundingModel")
-    funding_progress: float = Field(None, alias="fundingProgress")
+    funding_progress: Optional[float] = Field(0.0, alias="fundingProgress")
 
     class Config:
         populate_by_name = True
 
 class ReadCrowdFundProject(CrowdFundProjectBaseModel):
     id: int
-    location: Optional[ReadLocationRequest]
+    location: Optional[ReadLocationRequest] = Field(None)
 
 

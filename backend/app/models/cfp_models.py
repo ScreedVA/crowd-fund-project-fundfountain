@@ -1,18 +1,7 @@
 from .base_models import TimeStampModel
 from sqlalchemy import Column, Integer, Date, String, Text, Numeric, ForeignKey,Enum as SQLALchemyEnum
 from sqlalchemy.orm import relationship
-from enum import IntEnum
-
-class ProjectStatus(IntEnum):
-    PENDING_APPROVAL = 1
-    ACTIVE = 2
-    FUNDED = 3
-    COMPLETE = 4
-
-class FundingModel(IntEnum):
-    FIXED_PRICE = 1
-    MICRO_INVESTMENT = 2
-
+from enums import FundingModel, ProjectStatus
 
 class CrowdFundProject(TimeStampModel):
     __tablename__ = 'crowd_fund_project'
@@ -27,7 +16,7 @@ class CrowdFundProject(TimeStampModel):
     valuation = Column(Integer, nullable=False)
     status = Column(SQLALchemyEnum(ProjectStatus), nullable=False)
     funding_model = Column(SQLALchemyEnum(FundingModel), nullable=False)
-    funding_progress = Column(Numeric(precision=3, scale=2), default=0)
+    funding_progress = Column(Numeric(precision=3, scale=2), default=0.0)
 
     owner_id = Column(Integer, ForeignKey('user.id'))
 

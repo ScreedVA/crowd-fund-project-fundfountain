@@ -1,0 +1,55 @@
+/* Parent */
+
+.home-header-container {
+  font-family: "Roboto", sans-serif;
+  height: 100%;
+  display: grid;
+  grid-template-columns: 20% 60% 20%;
+}
+
+.home-header-grid-item {
+  /* border: 1px solid black; */
+}
+
+/* Search Form */
+
+.home-header-form {
+  height: 100%;
+  /* border: 1px solid black; */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.home-header-form > * {
+  font-family: "Roboto", sans-serif;
+  height: 40px;
+  font-size: 16px;
+  border: 1px solid #cccccc;
+  border-radius: 5px;
+}
+
+.home-header-form > .searchBar {
+  padding: 10px;
+  width: 400px;
+  margin-right: 10px;
+}
+
+.home-header-form > .searchFilter {
+  margin-right: 10px;
+  background-color: #00bcd4;
+  color: white;
+  font-weight: bold;
+}
+
+.home-header-form > .searchButton {
+  background-color: #00bcd4;
+  transition: background-color ease 0.3s;
+  color: white;
+  padding: 10px 20px;
+  font-weight: bold;
+}
+
+.home-header-form > .searchButton:hover {
+  background-color: #00838f;
+}

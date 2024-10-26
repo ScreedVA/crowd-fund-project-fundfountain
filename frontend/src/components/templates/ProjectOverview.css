@@ -1,0 +1,14 @@
+.project-overview-container {
+  background-color: #1e3a5f;
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 20% 80%;
+  border-top: 1px solid white;
+}
+
+.project-overview-left {
+  border-right: 1px solid white;
+}
+
+.project-overview-right {
+}
