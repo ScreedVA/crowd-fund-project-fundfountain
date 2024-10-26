@@ -19,7 +19,6 @@ class CrowdFundProject(TimeStampModel):
 
     name = Column(String(100), nullable=False)
     description = Column(Text, nullable=False)
-    date_created = Column(Date, nullable=False)
     fund_goal = Column(Integer, nullable=False)
     current_fund = Column(Integer, nullable=False)
     start_date = Column(Date, nullable=False)
@@ -28,7 +27,7 @@ class CrowdFundProject(TimeStampModel):
     valuation = Column(Integer, nullable=False)
     status = Column(SQLALchemyEnum(ProjectStatus), nullable=False)
     funding_model = Column(SQLALchemyEnum(FundingModel), nullable=False)
-    funding_progress = Column(Integer, default=0)
+    funding_progress = Column(Numeric(precision=3, scale=2), default=0)
 
     owner_id = Column(Integer, ForeignKey('user.id'))
 

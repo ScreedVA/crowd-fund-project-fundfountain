@@ -1,2 +1,3 @@
 from .location_service import transform_location_from_model, transform_location_from_req
 from .user_service import transform_user_from_model, transform_user_sum_from_model
+from .cfp_service import transform_cfp_summary_from_model
