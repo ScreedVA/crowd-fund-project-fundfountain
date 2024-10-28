@@ -24,16 +24,29 @@ const ProjectDetails: React.FC<ProjectDetailsProps> = ({ projectId }) => {
     <>
       <div className="project-details-container">
         <h1>{projectDetails?.name}</h1>
-        <h3>{projectDetails?.description}</h3>
-        <h5>Fund Goal: {projectDetails?.fundGoal}</h5>
-        <h5>Current Fund: {projectDetails?.currentFund}</h5>
-        <h5>Start Date: {projectDetails?.startDate}</h5>
-        <h5>Last Date: {projectDetails?.lastDate}</h5>
-        <h5>Total Units: {projectDetails?.totalUnits}</h5>
-        <h5>Valuation: {projectDetails?.valuation}</h5>
-        <h5>Status: {projectDetails?.status}</h5>
-        <h5>Funding Model: {projectDetails?.fundingModel}</h5>
-        <h5>Funding Progress: {projectDetails?.fundingProgress}</h5>
+        <h3 id="project-status">Status: {projectDetails?.status}</h3>
+        <p id="project-description">{projectDetails?.description}</p>
+
+        <div className="project-box">
+          <div className="project-box-field">
+            <h4>Fund Goal: {projectDetails?.fundGoal}</h4>
+            <h4>Current Fund: {projectDetails?.currentFund}</h4>
+          </div>
+          <div className="project-box-field">
+            <h4>Start Date: {projectDetails?.startDate}</h4>
+            <h4>Last Date: {projectDetails?.lastDate}</h4>
+          </div>
+        </div>
+        <div className="project-box">
+          <div className="project-box-field">
+            <h4>Total Units: {projectDetails?.totalUnits}</h4>
+            <h4>Valuation: {projectDetails?.valuation}</h4>
+          </div>
+          <div className="project-box-field">
+            <h4>Funding Model: {projectDetails?.fundingModel}</h4>
+            <h4>Funding Progress: {projectDetails?.fundingProgress}</h4>
+          </div>
+        </div>
       </div>
     </>
   );
