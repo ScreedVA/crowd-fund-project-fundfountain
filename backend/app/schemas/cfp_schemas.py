@@ -30,3 +30,7 @@ class ReadCrowdFundProject(CrowdFundProjectBaseModel):
     location: Optional[ReadLocationRequest] = Field(None)
 
 
+class InvestRequest(BaseModel):
+    amount: Optional[int] = Field(None, gt=999)
+    unit_count: Optional[int] = Field(None)
+

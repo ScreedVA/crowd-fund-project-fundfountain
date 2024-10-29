@@ -9,3 +9,13 @@ class ProjectStatus(Enum):
 class FundingModel(Enum):
     FIXED_PRICE = "Fixed Price"
     MICRO_INVESTMENT = "Micro Investment"
+
+class InvestmentStatus(Enum):
+    PENDING = "Pending"
+    COMMITED = "Commited"
+    PAID = "Paid"
+
+class UserPermissions(Enum):
+    CAN_EDIT = "CAN_EDIT"
+    CAN_DELETE = "CAN_DELETE"
+    CAN_INSERT = "CAN_INSERT"

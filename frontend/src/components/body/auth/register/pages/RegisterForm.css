@@ -84,12 +84,12 @@
   font-weight: bold;
   border-radius: 5px;
   cursor: pointer;
-  transition: background-color 0.3 ease;
+  transition: background-color 0.3s ease;
   width: 100%;
   margin-top: 20px;
 }
 
-button:hover {
+.register-button:hover {
   background-color: #008c9e;
 }
 

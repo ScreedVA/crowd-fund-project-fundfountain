@@ -1,16 +1,16 @@
-import "./HomeCenter.css";
+import "./ProjectUserDashboard.css";
 import ProjectList from "../../../templates/ProjectList/ProjectList";
-import { useEffect, useState } from "react";
 import { CrowdFundProjectSummary } from "../../../../models/ProjectModel";
-import { fetchAllProjects } from "../../../../services/ProjectService";
+import { fetchProjectListByCurrentUser } from "../../../../services/ProjectService";
+import { useEffect, useState } from "react";
 
-function HomeCenter() {
+function ProjectUserDashboard() {
   const [projectList, setProjectList] = useState<CrowdFundProjectSummary[]>([]);
 
   useEffect(() => {
     async function getProjectList() {
       const projectListRequest: CrowdFundProjectSummary[] =
-        await fetchAllProjects();
+        await fetchProjectListByCurrentUser();
       setProjectList(projectListRequest);
     }
     getProjectList();
@@ -18,10 +18,8 @@ function HomeCenter() {
 
   return (
     <>
-      <div className="home-center-container">
-        <ProjectList projectList={projectList} />
-      </div>
+      <ProjectList projectList={projectList} />
     </>
   );
 }
-export default HomeCenter;
+export default ProjectUserDashboard;

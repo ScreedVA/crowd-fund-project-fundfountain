@@ -13,7 +13,7 @@ function Register() {
           className="right-div"
           style={{
             gridColumn: "2",
-            backgroundColor: "#008c9e",
+            backgroundColor: "#2a4a6e",
           }}
         >
           <RegisterForm />

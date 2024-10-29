@@ -1,7 +1,7 @@
 import {
   CrowdFundProjectSummary,
   ReadCrowdFundProjectRequest,
-} from "../models/Project";
+} from "../models/ProjectModel";
 import { handle401Exception } from "./AuthService";
 import { getAccessToken } from "./StorageService";
 
@@ -46,5 +46,29 @@ export async function fetchProjectById(projectId: number) {
   }
 
   const resData: ReadCrowdFundProjectRequest = await response.json();
+  return resData;
+}
+
+export async function fetchProjectListByCurrentUser() {
+  let accessToken = getAccessToken();
+  let response: Response = await fetch(`${API_BASE_URL}/list/byCurrentUser`, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+
+  if (!response.ok) {
+    if (response.status == 401) {
+      response = await handle401Exception(
+        `${API_BASE_URL}/list/byCurrentUser`,
+        "GET"
+      );
+    } else {
+      console.error(`Error: (${response.status} ${response.statusText})`);
+    }
+  }
+
+  const resData: CrowdFundProjectSummary[] = await response.json();
   return resData;
 }

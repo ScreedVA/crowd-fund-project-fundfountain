@@ -1,4 +1,4 @@
-import { CrowdFundProjectSummary } from "../../models/Project";
+import { CrowdFundProjectSummary } from "../../../models/ProjectModel";
 import ProjectListItem from "./pages/ProjectListItem";
 import "./ProjectList.css";
 import { useNavigate } from "react-router-dom";
@@ -14,7 +14,7 @@ const ProjectList: React.FC<ProjectListProps> = ({ projectList }) => {
       <ul className="project-list-container">
         {projectList.map((value) => (
           <li
-            onClick={() => navigate(`project/${value.id}`)}
+            onClick={() => navigate(`./project/${value.id}`)}
             key={value.id}
             className="project-list-item-container"
           >

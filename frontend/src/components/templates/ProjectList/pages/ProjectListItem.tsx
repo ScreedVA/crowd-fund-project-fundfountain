@@ -1,5 +1,5 @@
 import React from "react";
-import { CrowdFundProjectSummary } from "../../../models/Project";
+import { CrowdFundProjectSummary } from "../../../../models/ProjectModel";
 
 const ProjectListItem: React.FC<CrowdFundProjectSummary> = ({
   name,

@@ -1,13 +1,13 @@
 import { ReadLocationRequest } from "./LocationModel";
 
-enum ProjectStatus {
+export enum ProjectStatus {
   PENDING_APPROVAL = "Pending Approval",
   ACTIVE = "Active",
   FUNDING = "Funding",
   COMPLETE = "Complete",
 }
 
-enum FundingModel {
+export enum FundingModel {
   FIXED_PRICE = 1,
   MICRO_INVESTMENT = 2,
 }

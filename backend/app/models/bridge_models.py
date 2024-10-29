@@ -1,7 +1,8 @@
 from sessions import Base
-from sqlalchemy import Column, Integer, ForeignKey
+from sqlalchemy import Column, Integer, ForeignKey, Numeric, Enum as SQLAlchemyEnum
 from sqlalchemy.orm import relationship
-
+from .base_models import TimeStampModel
+from enums import InvestmentStatus
 class UserLocation(Base):
     __tablename__ = "user_location"
 
@@ -22,4 +23,16 @@ class CrowdFundProjectLocation(Base):
     crowd_fund_project = relationship("CrowdFundProject", back_populates="bridge_locations")
     location = relationship("Location", back_populates="bridgeCrowdFundProjects")
 
-    
+# Bridge table for CrowdFundProject - User
+class Investment(TimeStampModel):
+    __tablename__ = 'investment'
+
+    crowd_fund_project_id = Column(Integer, ForeignKey('crowd_fund_project.id'))
+    investor_id = Column(Integer, ForeignKey('user.id'))
+    unit_count = Column(Integer) # fixed pricing model
+    share_percentage = Column(Numeric(precision=3, scale=2)) # micro-investment model
+    status = Column(SQLAlchemyEnum(InvestmentStatus), default=InvestmentStatus.PAID)
+
+
+    crowd_fund_project = relationship("CrowdFundProject", back_populates="bridge_investments")
+    investor = relationship("User", back_populates="bridge_investments")

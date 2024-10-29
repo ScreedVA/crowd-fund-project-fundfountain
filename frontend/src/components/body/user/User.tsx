@@ -2,7 +2,7 @@ import { useState } from "react";
 import "./User.css";
 import UserMenuBar from "./pages/UserMenuBar";
 import UserForm from "./pages/UserForm";
-import ProjectDashboard from "./pages/ProjectDashboard";
+import ProjectUserDashboard from "./pages/ProjectUserDashboard";
 import InvestorPortfolio from "./pages/InvestorPortfolio";
 
 function User() {
@@ -31,7 +31,7 @@ function User() {
             {selectOptions[selectedIndex]}
           </h1>
           {selectedIndex == 0 && <UserForm />}
-          {selectedIndex == 1 && <ProjectDashboard />}
+          {selectedIndex == 1 && <ProjectUserDashboard />}
           {selectedIndex == 2 && <InvestorPortfolio />}
         </div>
       </div>

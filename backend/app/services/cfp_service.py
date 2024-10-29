@@ -8,7 +8,7 @@ def transform_cfp_summary_from_model(model: CrowdFundProject) -> CrowdFundProjec
         name=model.name,
         description=model.description
     )
-
+    
     return schema
 
 def transform_cfp_details_from_model(model: CrowdFundProject) -> ReadCrowdFundProject:

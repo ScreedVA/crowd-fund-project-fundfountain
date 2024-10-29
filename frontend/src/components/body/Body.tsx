@@ -6,7 +6,7 @@ import User from "./user/User";
 import Register from "./auth/register/Register";
 import Login from "./auth/login/Login";
 import { Route, Routes } from "react-router-dom";
-import ProjectOverview from "../templates/ProjectOverview";
+import ProjectOverview from "../templates/ProjectOverview/ProjectOverview";
 
 function Body() {
   return (
@@ -18,6 +18,7 @@ function Body() {
           <Route path="/about" element={<About />} />
           <Route path="/user" element={<User />} />
           <Route path="/project/:id" element={<ProjectOverview />} />
+          <Route path="/user/project/:id" element={<ProjectOverview />} />
           {/* Auth */}
           <Route path="/register" element={<Register />}></Route>
           <Route path="/login" element={<Login />}></Route>
