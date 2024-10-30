@@ -16,7 +16,8 @@ class CrowdFundProjectBaseModel(BaseModel):
     current_fund: int = Field(None, alias="currentFund")
     start_date: str = Field(..., alias="startDate")
     last_date: str = Field(..., alias="lastDate")
-    total_units: int = Field(None, alias="totalUnits")
+    total_units: Optional[int] = Field(None, alias="totalUnits")
+    unit_price: int = Field(None, alias="unitPrice")
     valuation: int 
     status: ProjectStatus
     funding_model: FundingModel = Field(None, alias="fundingModel")
@@ -31,6 +32,6 @@ class ReadCrowdFundProject(CrowdFundProjectBaseModel):
 
 
 class InvestRequest(BaseModel):
-    amount: Optional[int] = Field(None, gt=999)
-    unit_count: Optional[int] = Field(None)
+    amount: Optional[int] = Field(None)
+    unit_count: Optional[int] = Field(None, alias="unitCount")
 

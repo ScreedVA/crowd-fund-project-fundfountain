@@ -8,8 +8,8 @@ export enum ProjectStatus {
 }
 
 export enum FundingModel {
-  FIXED_PRICE = 1,
-  MICRO_INVESTMENT = 2,
+  FIXED_PRICE = "Fixed Price",
+  MICRO_INVESTMENT = "Micro-Investment",
 }
 
 interface CrowdFundProjectBaseModel {
@@ -18,6 +18,7 @@ interface CrowdFundProjectBaseModel {
   fundGoal: number;
   currentFund: number;
   startDate: string;
+  unitPrice: number;
   lastDate: string;
   totalUnits: number;
   valuation: number;
@@ -35,4 +36,9 @@ export interface CrowdFundProjectSummary {
 export interface ReadCrowdFundProjectRequest extends CrowdFundProjectBaseModel {
   id: number;
   location?: ReadLocationRequest;
+}
+
+export interface InvestRequestModel {
+  amount: number;
+  unitCount: number;
 }

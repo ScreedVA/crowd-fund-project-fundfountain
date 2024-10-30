@@ -36,3 +36,4 @@ class Investment(TimeStampModel):
 
     crowd_fund_project = relationship("CrowdFundProject", back_populates="bridge_investments")
     investor = relationship("User", back_populates="bridge_investments")
+

@@ -22,6 +22,7 @@ def transform_cfp_details_from_model(model: CrowdFundProject) -> ReadCrowdFundPr
         start_date=datetime.strftime(model.start_date, "%Y-%m-%d"),
         last_date=datetime.strftime(model.last_date, "%Y-%m-%d"),
         total_units=model.total_units,
+        unit_price=model.unit_price,
         valuation=model.valuation,
         status=model.status,
         funding_model=model.funding_model,

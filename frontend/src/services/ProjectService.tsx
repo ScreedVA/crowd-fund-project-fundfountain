@@ -1,5 +1,6 @@
 import {
   CrowdFundProjectSummary,
+  InvestRequestModel,
   ReadCrowdFundProjectRequest,
 } from "../models/ProjectModel";
 import { handle401Exception } from "./AuthService";
@@ -70,5 +71,35 @@ export async function fetchProjectListByCurrentUser() {
   }
 
   const resData: CrowdFundProjectSummary[] = await response.json();
+  return resData;
+}
+
+export async function investHttpRequest(
+  investRequest: InvestRequestModel,
+  projectId: number
+) {
+  let accessToken = getAccessToken();
+  let response: Response = await fetch(`${API_BASE_URL}/invest/${projectId}`, {
+    method: "PUT",
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(investRequest),
+  });
+
+  if (!response.ok) {
+    if (response.status == 401) {
+      response = await handle401Exception(
+        `${API_BASE_URL}/invest/${projectId}`,
+        "PUT",
+        investRequest
+      );
+    } else {
+      console.error(`Error: (${response.status} ${response.statusText})`);
+    }
+  }
+
+  const resData: any = await response.json();
   return resData;
 }

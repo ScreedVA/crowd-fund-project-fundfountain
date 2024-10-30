@@ -14,7 +14,7 @@ class CrowdFundProject(TimeStampModel):
     start_date = Column(Date, nullable=False)
     last_date = Column(Date, nullable=False)
     unit_price = Column(Integer, nullable=False)
-    total_units = Column(Integer, nullable=False)
+    total_units = Column(Integer)
     valuation = Column(Integer)
     status = Column(SQLALchemyEnum(ProjectStatus), nullable=False)
     funding_progress = Column(Numeric(precision=3, scale=2), default=0.0)
@@ -25,11 +25,15 @@ class CrowdFundProject(TimeStampModel):
     bridge_locations = relationship("CrowdFundProjectLocation", back_populates="crowd_fund_project")
     bridge_investments = relationship("Investment", back_populates="crowd_fund_project")
     
-    def update_valuation_and_progress(self):
-        self.total_units = self.fund_goal // self.unit_price
-        self.valuation = self.total_units * self.unit_price
+    def update_valuation(self):
+        self.valuation =  (self.fund_goal // self.unit_price) * self.unit_price
         if self.valuation < self.fund_goal:
             self.valuation = self.fund_goal = self.valuation + self.unit_price
+            if self.funding_model == FundingModel.FIXED_PRICE:
+                self.total_units = self.fund_goal // self.unit_price
+
+        
+    def update_progress(self):
         if self.fund_goal > 0:
             self.funding_progress = round((self.current_fund / self.fund_goal) * 100, 2)
         else:
@@ -43,8 +47,9 @@ class CrowdFundProject(TimeStampModel):
             raise ValueError("Invalid funding model.")
         
         self.total_units -= units_to_invest
-        self.current_fund += self.total_units * self.unit_price
+        self.current_fund += units_to_invest * self.unit_price
 
+        self.update_progress()
 
     def invest_micro_investment(self, amount: int):
         if self.funding_model == FundingModel.MICRO_INVESTMENT:
@@ -53,7 +58,8 @@ class CrowdFundProject(TimeStampModel):
         else:
             raise ValueError("Invalid funding model.")
 
-        self.update_valuation_and_progress()
+        self.update_progress()
+
 
 
 
