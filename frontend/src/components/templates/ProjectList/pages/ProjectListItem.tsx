@@ -1,10 +1,7 @@
 import React from "react";
-import { CrowdFundProjectSummary } from "../../../../models/ProjectModel";
+import { CFProjectSummary } from "../../../../models/ProjectModel";
 
-const ProjectListItem: React.FC<CrowdFundProjectSummary> = ({
-  name,
-  description,
-}) => {
+const ProjectListItem: React.FC<CFProjectSummary> = ({ name, description }) => {
   return (
     <>
       <h1>{name}</h1>

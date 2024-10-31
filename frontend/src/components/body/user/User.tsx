@@ -4,13 +4,15 @@ import UserMenuBar from "./pages/UserMenuBar";
 import UserForm from "./pages/UserForm";
 import ProjectUserDashboard from "./pages/ProjectUserDashboard";
 import InvestorPortfolio from "./pages/InvestorPortfolio";
+import ProjectForm from "../../templates/ProjectForm/ProjectForm";
 
 function User() {
   const [selectedIndex, setSelectedIndex] = useState<number>(0);
   const selectOptions: string[] = [
     "Account Details",
-    "Project Dashboard",
     "Investment Portfolio",
+    "Project Dashboard",
+    "Create New Project",
   ];
 
   function handleMenuItemChange(index: number) {
@@ -31,8 +33,9 @@ function User() {
             {selectOptions[selectedIndex]}
           </h1>
           {selectedIndex == 0 && <UserForm />}
-          {selectedIndex == 1 && <ProjectUserDashboard />}
-          {selectedIndex == 2 && <InvestorPortfolio />}
+          {selectedIndex == 1 && <InvestorPortfolio />}
+          {selectedIndex == 2 && <ProjectUserDashboard />}
+          {selectedIndex == 3 && <ProjectForm />}
         </div>
       </div>
     </>

@@ -9,7 +9,7 @@ from sqlalchemy.orm import Session
 from sessions import SessionLocal
 from schemas.user_schemas import CreateUserRequest, Token, RefreshTokenRequest
 from models import User, UserLocation, RefreshToken
-from services import transform_location_from_req
+from services import transform_to_location_model_from_req
 
 
 router = APIRouter(
@@ -93,7 +93,7 @@ async def register_user_for_access_token(db: db_dependency,
     db.commit()
     db.refresh(create_user_model)
     if (create_user_request.location):
-        create_location_model = transform_location_from_req(create_user_request.location)
+        create_location_model = transform_to_location_model_from_req(create_user_request.location)
         db.add(create_location_model)
         db.commit()
         db.refresh(create_location_model)
@@ -102,7 +102,7 @@ async def register_user_for_access_token(db: db_dependency,
         db.commit()
 
 
-    access_token, access_expires = create_bearer_token(create_user_model.username, create_user_model.id, timedelta(minutes=60))
+    access_token, access_expires = create_bearer_token(create_user_model.username, create_user_model.id, timedelta(minutes=1))
     refresh_token, refresh_expires = create_bearer_token(create_user_model.username, create_user_model.id, timedelta(days=7))
 
     refresh_token_model: RefreshToken = RefreshToken(token=refresh_token, user_id=create_user_model.id, expires_at=refresh_expires)
@@ -119,7 +119,7 @@ async def login_for_access_token(form_data: Annotated[OAuth2PasswordRequestForm,
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
                             detail='Could not validate user.')
 
-    access_token, _ = create_bearer_token(user.username, user.id, timedelta(seconds=10))
+    access_token, _ = create_bearer_token(user.username, user.id, timedelta(minutes=30))
     refresh_token, refresh_expires = create_bearer_token(user.username, user.id, timedelta(days=7))
 
     refresh_token_model: RefreshToken = RefreshToken(token=refresh_token, user_id=user.id, expires_at=refresh_expires)
@@ -140,7 +140,7 @@ async def refresh_access_token(request_body: RefreshTokenRequest, db: db_depende
         if not stored_token:
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid refresh token")
         
-        new_access_token, _ = create_bearer_token(username, user_id, timedelta(seconds=10))
+        new_access_token, _ = create_bearer_token(username, user_id, timedelta(minutes=1))
 
         return {'access_token': new_access_token, 'token_type': 'bearer'}
     except JWTError:

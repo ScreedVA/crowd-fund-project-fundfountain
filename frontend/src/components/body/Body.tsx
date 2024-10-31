@@ -19,6 +19,8 @@ function Body() {
           <Route path="/user" element={<User />} />
           <Route path="/project/:id" element={<ProjectOverview />} />
           <Route path="/user/project/:id" element={<ProjectOverview />} />
+          <Route path="/edit/project/:id" element={<ProjectOverview />} />
+
           {/* Auth */}
           <Route path="/register" element={<Register />}></Route>
           <Route path="/login" element={<Login />}></Route>

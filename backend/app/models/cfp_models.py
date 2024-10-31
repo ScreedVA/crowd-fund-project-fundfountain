@@ -2,6 +2,7 @@ from .base_models import TimeStampModel
 from sqlalchemy import Column, Integer, Date, String, Text, Numeric, ForeignKey,Enum as SQLALchemyEnum
 from sqlalchemy.orm import relationship
 from enums import FundingModel, ProjectStatus
+from schemas import UpdateCFProject
 
 class CrowdFundProject(TimeStampModel):
     __tablename__ = 'crowd_fund_project'
@@ -10,7 +11,7 @@ class CrowdFundProject(TimeStampModel):
     description = Column(Text, nullable=False)
     fund_goal = Column(Integer, nullable=False)
     funding_model = Column(SQLALchemyEnum(FundingModel), nullable=False)
-    current_fund = Column(Integer, nullable=False)
+    current_fund = Column(Integer, default=0)
     start_date = Column(Date, nullable=False)
     last_date = Column(Date, nullable=False)
     unit_price = Column(Integer, nullable=False)
@@ -29,12 +30,12 @@ class CrowdFundProject(TimeStampModel):
         self.valuation =  (self.fund_goal // self.unit_price) * self.unit_price
         if self.valuation < self.fund_goal:
             self.valuation = self.fund_goal = self.valuation + self.unit_price
-            if self.funding_model == FundingModel.FIXED_PRICE:
-                self.total_units = self.fund_goal // self.unit_price
+        if self.funding_model == FundingModel.FIXED_PRICE:
+            self.total_units = self.fund_goal // self.unit_price
 
         
     def update_progress(self):
-        if self.fund_goal > 0:
+        if self.fund_goal > 0 and self.current_fund != None:
             self.funding_progress = round((self.current_fund / self.fund_goal) * 100, 2)
         else:
             self.funding_progress = 0.0
@@ -60,6 +61,9 @@ class CrowdFundProject(TimeStampModel):
 
         self.update_progress()
 
+    def update_from_request(self, request: UpdateCFProject):
+        self.name = request.name
+        self.description = request.description
 
 
 

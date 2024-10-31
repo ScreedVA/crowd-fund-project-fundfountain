@@ -8,7 +8,7 @@ class ProjectStatus(Enum):
 
 class FundingModel(Enum):
     FIXED_PRICE = "Fixed Price"
-    MICRO_INVESTMENT = "Micro Investment"
+    MICRO_INVESTMENT = "Micro-Investment"
 
 class InvestmentStatus(Enum):
     PENDING = "Pending"

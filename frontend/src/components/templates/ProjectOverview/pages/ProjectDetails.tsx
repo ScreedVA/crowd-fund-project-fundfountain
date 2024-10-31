@@ -2,14 +2,15 @@ import { useEffect, useState } from "react";
 import "./ProjectDetails.css";
 import {
   InvestRequestModel,
-  ReadCrowdFundProjectRequest,
+  ReadCFProjectModel,
 } from "../../../../models/ProjectModel";
 import {
-  fetchProjectById,
+  fetchProjectByIdHttpRequest,
   investHttpRequest,
 } from "../../../../services/ProjectService";
 import { FundingModel } from "../../../../models/ProjectModel";
 import ProgressBar from "../../ProgressBar/ProgressBar";
+import { useNavigate } from "react-router-dom";
 interface ProjectDetailsProps {
   projectId: number;
   isUserPath: boolean;
@@ -19,22 +20,27 @@ const ProjectDetails: React.FC<ProjectDetailsProps> = ({
   projectId,
   isUserPath,
 }) => {
-  const [projectDetails, setProjectDetails] =
-    useState<ReadCrowdFundProjectRequest>();
+  const [projectDetails, setProjectDetails] = useState<ReadCFProjectModel>();
   const [isModalOpen, setModalOpen] = useState(false);
   const [unitsToInvest, setUnitsToInvest] = useState(0);
-  const [investAmount, setInvestAmount] = useState(0);
+  const [microInvestAmount, setMicroInvestAmount] = useState(0);
+
   const [reload, setReload] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     async function getProjectById() {
-      const projectResponse: ReadCrowdFundProjectRequest =
-        await fetchProjectById(projectId);
+      const projectResponse: ReadCFProjectModel =
+        await fetchProjectByIdHttpRequest(projectId);
 
       setProjectDetails(projectResponse);
     }
     getProjectById();
   }, [reload]);
+
+  const handleEditClick = () => {
+    navigate(`/edit/project/${projectId}`);
+  };
 
   const handleInvestClick = () => {
     setModalOpen(true);
@@ -55,26 +61,25 @@ const ProjectDetails: React.FC<ProjectDetailsProps> = ({
         return;
       }
     } else if (projectDetails?.fundingModel == FundingModel.MICRO_INVESTMENT) {
-      if (investAmount < 1000) {
-        alert(`Invest Amount: ${investAmount} must be atleast 1000`);
+      if (microInvestAmount < 1000) {
+        console.log(microInvestAmount);
+        alert(`Invest Amount: ${microInvestAmount} must be atleast 1000`);
         return;
       }
     }
 
     const investRequestBody: InvestRequestModel = {
-      amount: investAmount,
+      amount: microInvestAmount,
       unitCount: unitsToInvest,
     };
 
     async function sendInvestRequest() {
-      const response: any = await investHttpRequest(
-        investRequestBody,
-        projectDetails!.id
-      );
+      await investHttpRequest(investRequestBody, projectDetails!.id);
+
       setReload((prev) => !prev);
       handleCloseModal();
       setUnitsToInvest(0);
-      setInvestAmount(0);
+      setMicroInvestAmount(0);
     }
     sendInvestRequest();
   };
@@ -121,6 +126,8 @@ const ProjectDetails: React.FC<ProjectDetailsProps> = ({
             <h4>Funding Model: {projectDetails?.fundingModel}</h4>
             <h4>Funding Progress: {projectDetails?.fundingProgress}%</h4>
           </div>
+
+          {/* Edit/Invest Buttun */}
           {!isUserPath ? (
             <div className="project-box">
               <button
@@ -132,16 +139,15 @@ const ProjectDetails: React.FC<ProjectDetailsProps> = ({
             </div>
           ) : (
             <div className="project-box">
-              <button
-                className="project-invest-btn"
-                onClick={handleInvestClick}
-              >
-                <a>Invest</a>
+              <button className="project-invest-btn" onClick={handleEditClick}>
+                <a>Edit</a>
               </button>
             </div>
           )}
         </div>
       </div>
+
+      {/* Modal Form */}
       {isModalOpen && (
         <div className="modal">
           <div className="modal-body">
@@ -169,21 +175,17 @@ const ProjectDetails: React.FC<ProjectDetailsProps> = ({
                 </button>
               </form>
             ) : (
-              <form className="modal-form">
+              <form className="modal-form" onSubmit={handleInvestConfirmClick}>
                 <h2>Micro Investments</h2>
                 <input
                   type="number"
                   name="investAmount"
                   className="modal-input"
-                  onChange={(e) => setInvestAmount(Number(e.target.value))}
+                  onChange={(e) => setMicroInvestAmount(Number(e.target.value))}
                   placeholder="Minimum Amount: $1000"
                   required
                 />
-                <button
-                  type="submit"
-                  className="modal-confirm-btn"
-                  onClick={handleInvestConfirmClick}
-                >
+                <button type="submit" className="modal-confirm-btn">
                   Confirm Payment
                 </button>
               </form>

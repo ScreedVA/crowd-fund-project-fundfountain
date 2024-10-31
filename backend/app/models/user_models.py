@@ -1,5 +1,5 @@
 from .base_models import TimeStampModel
-from sqlalchemy import Column, String, Boolean, Date
+from sqlalchemy import Column, String, Boolean, Date, Integer
 from sqlalchemy.orm import relationship
 from datetime import datetime
 from schemas.user_schemas import UpdateUserRequest
@@ -17,6 +17,7 @@ class User(TimeStampModel):
     is_project_owner = Column(Boolean, default=False)
     is_investor = Column(Boolean, default=False)
     date_of_birth = Column(Date, nullable=False)
+    bank_account_balance = Column(Integer)
 
     bridgeLocations = relationship("UserLocation", back_populates="user")
     refresh_token = relationship('RefreshToken', back_populates='user')
@@ -32,3 +33,6 @@ class User(TimeStampModel):
         self.is_admin = request.is_admin
         self.is_investor = request.is_investor
         self.is_project_owner = request.is_project_owner
+
+    def deposite_balance(self, amount: int):
+        self.bank_account_balance += amount

@@ -3,11 +3,10 @@ from schemas.user_schemas import CreateLocationRequest
 from schemas import ReadLocationRequest, CreateLocationRequest
 
 
-def transform_location_from_model(location: Location) -> ReadLocationRequest:
+def transform_to_location_read_schema_from_model(location: Location) -> ReadLocationRequest:
 
 
     read_location_request = ReadLocationRequest(
-        id=location.id,
         street=location.street,
         plz=location.plz,
         country=location.country,
@@ -19,7 +18,7 @@ def transform_location_from_model(location: Location) -> ReadLocationRequest:
     return read_location_request
 
 
-def transform_location_from_req(create_location_request: CreateLocationRequest) -> Location:
+def transform_to_location_model_from_req(create_location_request: CreateLocationRequest) -> Location:
 
     create_location_model = Location(
         street=create_location_request.street,

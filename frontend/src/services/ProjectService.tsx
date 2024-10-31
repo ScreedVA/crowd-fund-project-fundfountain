@@ -1,35 +1,40 @@
 import {
-  CrowdFundProjectSummary,
+  CFProjectSummary,
+  CreateCFProjectModel,
+  UpdateCFProjectModel,
   InvestRequestModel,
-  ReadCrowdFundProjectRequest,
+  ReadCFProjectModel,
 } from "../models/ProjectModel";
 import { handle401Exception } from "./AuthService";
 import { getAccessToken } from "./StorageService";
-
-const API_BASE_URL: string = "http://127.0.0.1:8000/crowd_fund_project";
+import { API_BASE_DOMAIN } from "./CommonService";
+const API_BASE_URL: string = `${API_BASE_DOMAIN}/crowd_fund_project`;
 
 export async function fetchAllProjects() {
-  let accessToken = getAccessToken();
-  let response: Response = await fetch(`${API_BASE_URL}`, {
-    method: "GET",
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-    },
-  });
+  try {
+    let accessToken = getAccessToken();
+    let response: Response = await fetch(`${API_BASE_URL}`, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
 
-  if (!response.ok) {
-    if (response.status == 401) {
-      response = await handle401Exception(`${API_BASE_URL}`, "GET");
-    } else {
-      console.error(`Error: (${response.status} ${response.statusText})`);
+    if (!response.ok) {
+      if (response.status == 401) {
+        response = await handle401Exception(`${API_BASE_URL}`, "GET");
+      } else {
+        console.error(`Error: (${response.status} ${response.statusText})`);
+      }
     }
+    const resData: CFProjectSummary[] = await response.json();
+    return resData;
+  } catch (error) {
+    console.error("Fetch error: ", error);
   }
-
-  const resData: CrowdFundProjectSummary[] = await response.json();
-  return resData;
 }
 
-export async function fetchProjectById(projectId: number) {
+export async function fetchProjectByIdHttpRequest(projectId: number) {
   let accessToken = getAccessToken();
   let response: Response = await fetch(`${API_BASE_URL}/${projectId}`, {
     method: "GET",
@@ -46,7 +51,7 @@ export async function fetchProjectById(projectId: number) {
     }
   }
 
-  const resData: ReadCrowdFundProjectRequest = await response.json();
+  const resData: ReadCFProjectModel = await response.json();
   return resData;
 }
 
@@ -70,7 +75,66 @@ export async function fetchProjectListByCurrentUser() {
     }
   }
 
-  const resData: CrowdFundProjectSummary[] = await response.json();
+  const resData: CFProjectSummary[] = await response.json();
+  return resData;
+}
+
+export async function createCFProjectHttpRequest(
+  requestBody: CreateCFProjectModel
+) {
+  let accessToken = getAccessToken();
+  let response: Response = await fetch(`${API_BASE_URL}/`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(requestBody),
+  });
+
+  if (!response.ok) {
+    if (response.status == 401) {
+      response = await handle401Exception(
+        `${API_BASE_URL}`,
+        "POST",
+        requestBody
+      );
+    } else {
+      console.error(`Error: (${response.status} ${response.statusText})`);
+    }
+  }
+
+  const resData: CreateCFProjectModel[] = await response.json();
+  return resData;
+}
+
+export async function updateCFProjectHttpRequest(
+  projectId: number,
+  requestBody: UpdateCFProjectModel
+) {
+  let accessToken = getAccessToken();
+  let response: Response = await fetch(`${API_BASE_URL}/${projectId}`, {
+    method: "PUT",
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(requestBody),
+  });
+
+  if (!response.ok) {
+    if (response.status == 401) {
+      response = await handle401Exception(
+        `${API_BASE_URL}/${projectId}`,
+        "PUT",
+        requestBody
+      );
+    } else {
+      console.error(`Error: (${response.status} ${response.statusText})`);
+    }
+  }
+
+  const resData: UpdateCFProjectModel[] = await response.json();
   return resData;
 }
 

@@ -8,8 +8,9 @@ import {
   setAccessToken,
   setRefreshToken,
 } from "./StorageService";
+import { API_BASE_DOMAIN } from "./CommonService";
 
-const API_BASE_URL: string = "http://127.0.0.1:8000/auth";
+const API_BASE_URL: string = `${API_BASE_DOMAIN}/auth`;
 
 async function refreshAccessToken(): Promise<string> {
   const responseToken: string | null = getRefreshToken();

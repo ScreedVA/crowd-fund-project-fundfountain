@@ -1,16 +1,15 @@
 import "./HomeCenter.css";
 import ProjectList from "../../../templates/ProjectList/ProjectList";
 import { useEffect, useState } from "react";
-import { CrowdFundProjectSummary } from "../../../../models/ProjectModel";
+import { CFProjectSummary } from "../../../../models/ProjectModel";
 import { fetchAllProjects } from "../../../../services/ProjectService";
 
 function HomeCenter() {
-  const [projectList, setProjectList] = useState<CrowdFundProjectSummary[]>([]);
+  const [projectList, setProjectList] = useState<CFProjectSummary[]>([]);
 
   useEffect(() => {
     async function getProjectList() {
-      const projectListRequest: CrowdFundProjectSummary[] =
-        await fetchAllProjects();
+      const projectListRequest: CFProjectSummary[] = await fetchAllProjects();
       setProjectList(projectListRequest);
     }
     getProjectList();

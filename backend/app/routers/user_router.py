@@ -6,7 +6,7 @@ from starlette import status
 from models import User, Location
 from .auth_router import get_current_user
 from schemas.user_schemas import UpdateUserRequest
-from services import transform_user_from_model, transform_location_from_model, transform_user_sum_from_model
+from services import transform_user_from_model, transform_to_location_read_schema_from_model, transform_user_sum_from_model
 
 router = APIRouter(
     prefix='/user',
@@ -40,7 +40,7 @@ async def read_current_user(db: db_dependency, user: user_dependency):
     transformed_user = transform_user_from_model(user)
     if user.bridgeLocations:
         location = db.query(Location).filter(Location.id == user.bridgeLocations[0].location_id).first()
-        transformed_user.location = transform_location_from_model(location)
+        transformed_user.location = transform_to_location_read_schema_from_model(location)
     
     return transformed_user
         

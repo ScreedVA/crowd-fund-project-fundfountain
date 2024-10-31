@@ -12,29 +12,40 @@ export enum FundingModel {
   MICRO_INVESTMENT = "Micro-Investment",
 }
 
-interface CrowdFundProjectBaseModel {
+interface CFProjectBaseModel {
   name: string;
   description: string;
+}
+
+export interface CFProjectSummary extends CFProjectBaseModel {
+  id?: number;
+}
+
+export interface ReadCFProjectModel extends CFProjectBaseModel {
+  id: number;
   fundGoal: number;
   currentFund: number;
   startDate: string;
-  unitPrice: number;
   lastDate: string;
+  unitPrice: number;
   totalUnits: number;
   valuation: number;
   status: ProjectStatus;
   fundingModel: FundingModel;
   fundingProgress: number;
+  location?: ReadLocationRequest;
 }
 
-export interface CrowdFundProjectSummary {
-  id?: number;
-  name: string;
-  description: string;
+export interface CreateCFProjectModel extends CFProjectBaseModel {
+  fundGoal: number;
+  unitPrice: number;
+  startDate: string;
+  lastDate: string;
+  status: ProjectStatus;
+  fundingModel: FundingModel;
 }
 
-export interface ReadCrowdFundProjectRequest extends CrowdFundProjectBaseModel {
-  id: number;
+export interface UpdateCFProjectModel extends CFProjectBaseModel {
   location?: ReadLocationRequest;
 }
 

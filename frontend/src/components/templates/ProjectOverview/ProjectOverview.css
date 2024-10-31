@@ -12,3 +12,9 @@
 
 .project-overview-right {
 }
+
+.project-overview-h1 {
+  text-align: center;
+  color: white;
+  font-family: "Rotobo", sans-serif;
+}

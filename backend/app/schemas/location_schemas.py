@@ -18,6 +18,5 @@ class CreateLocationRequest(LocationBaseModel):
     pass
 
 class ReadLocationRequest(LocationBaseModel):
-    id: int
-
+    pass
 

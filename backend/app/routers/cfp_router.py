@@ -1,10 +1,10 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sessions import SessionLocal
 from sqlalchemy.orm import Session
-from models import CrowdFundProject, Investment
-from schemas import CrowdFundProjectSummary, ReadCrowdFundProject, InvestRequest
+from models import CrowdFundProject, Investment, Location, CrowdFundProjectLocation
+from schemas import CrowdFundProjectSummary, ReadCrowdFundProject, InvestRequest, CreateCFProject, ReadLocationRequest, UpdateCFProject
 from enums import FundingModel, InvestmentStatus
-from services import transform_cfp_summary_from_model, transform_cfp_details_from_model
+from services import transform_cfp_summary_from_model, transform_to_cfp_details_schema_from_model, validate_project_fields, transform_to_model_from_cfp_create_schema, transform_to_location_model_from_req, transform_to_location_read_schema_from_model
 from .auth_router import get_current_user
 from typing import Annotated
 from starlette import status
@@ -48,9 +48,73 @@ async def read_all_projects(db: db_dependency, user: user_dependency):
 async def read_project_by_id(project_id: int, db: db_dependency):
     cfp_model: CrowdFundProject = db.query(CrowdFundProject).filter(CrowdFundProject.id == project_id).first()
 
-    cfp_response = transform_cfp_details_from_model(cfp_model)
+    cfp_response = transform_to_cfp_details_schema_from_model(cfp_model)
+
+    if cfp_model.bridge_locations:
+        location_model = db.query(Location).filter(Location.id == cfp_model.bridge_locations[0].location_id).first()
+        location_response: ReadLocationRequest = transform_to_location_read_schema_from_model(location_model)
+        cfp_response.location = location_response
+
     return cfp_response
 
+@router.post("/")
+async def create_project(db: db_dependency, user: user_dependency,  request: CreateCFProject,):
+    if not user:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="User not authorized, cannot create new project")
+    if not request:
+        raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail="Unprocessable entity, invalid create project request body")
+
+    validate_project_fields(request)
+    
+    cfp_model:CrowdFundProject = transform_to_model_from_cfp_create_schema(request)
+    cfp_model.owner_id = user["id"]
+
+    cfp_model.update_valuation()
+    cfp_model.update_progress()
+    db.add(cfp_model)
+    db.commit()
+    db.refresh(cfp_model)
+
+    if request.location:
+        location_model: Location = transform_to_location_model_from_req(request.location)
+        db.add(location_model)
+        db.commit()
+        db.refresh(location_model)
+
+        bridge_cfp_location_model = CrowdFundProjectLocation(
+            crowd_fund_project_id=cfp_model.id,
+            location_id=location_model.id
+        )
+
+        db.add(bridge_cfp_location_model)
+        db.commit()
+    print(cfp_model.total_units)
+
+    return {"crowd_fund_model":transform_to_cfp_details_schema_from_model(cfp_model), "location_model": transform_to_location_read_schema_from_model(location_model)}
+
+@router.put("/{project_id}", status_code=status.HTTP_201_CREATED)
+async def update_project(request: UpdateCFProject, project_id: int,user: user_dependency, db: db_dependency):
+    if not user:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="User not authorized, cannot invest into this project")
+    if not request:
+        raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail="Unprocessable entity, invalid invest request body")
+    
+    cfp_model_list_by_owner: list[CrowdFundProject] = db.query(CrowdFundProject).filter(CrowdFundProject.owner_id == user["id"]).all()
+    cfp_model: CrowdFundProject = db.query(CrowdFundProject).filter(CrowdFundProject.id == project_id).first()
+
+    if cfp_model not in cfp_model_list_by_owner:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="User not authorized, cannot update this project")
+
+    location = db.query(Location).filter(Location.id == cfp_model.bridge_locations[0].location_id).first()
+    
+    cfp_model.update_from_request(request)
+    location.update_from_request(request.location) 
+
+    db.add(cfp_model)
+    db.add(location)
+    db.commit()
+
+    
 
 @router.put("/invest/{project_id}")
 async def invest(project_id: int, invest_request: InvestRequest, db: db_dependency, user: user_dependency):
@@ -91,7 +155,7 @@ async def invest(project_id: int, invest_request: InvestRequest, db: db_dependen
     db.add(investment_bridge_model)
     db.commit()
     db.refresh(investment_bridge_model)
-    return {"crowdFundModel": cfp_model, "investMentBridgeModel": investment_bridge_model}
+    return {"crowdFundModel": cfp_model, "investmentBridgeModel": investment_bridge_model}
 
 
 

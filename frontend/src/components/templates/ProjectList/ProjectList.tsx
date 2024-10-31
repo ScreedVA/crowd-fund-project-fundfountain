@@ -1,9 +1,9 @@
-import { CrowdFundProjectSummary } from "../../../models/ProjectModel";
+import { CFProjectSummary } from "../../../models/ProjectModel";
 import ProjectListItem from "./pages/ProjectListItem";
 import "./ProjectList.css";
 import { useNavigate } from "react-router-dom";
 interface ProjectListProps {
-  projectList: CrowdFundProjectSummary[];
+  projectList: CFProjectSummary[];
 }
 
 const ProjectList: React.FC<ProjectListProps> = ({ projectList }) => {

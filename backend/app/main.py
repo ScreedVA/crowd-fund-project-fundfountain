@@ -3,7 +3,7 @@ from fastapi import FastAPI, Depends
 from routers import user_router, auth_router, cfp_router
 from sessions import engine, Base, SessionLocal
 from sqlalchemy.orm import Session
-from models import User, Location, UserLocation, CrowdFundProject
+from models import User, Location, UserLocation, CrowdFundProject, CrowdFundProjectLocation
 from enums import FundingModel, ProjectStatus
 from fastapi.middleware.cors import CORSMiddleware
 from datetime import datetime
@@ -47,13 +47,13 @@ def add_default_data(db: db_dependency):
         User( username="charlie", email="charlie@example.com", hashed_password=auth_router.bcrypt_context.hash("123"), first_name="charlie", last_name="smith", is_investor=True, date_of_birth=datetime.date(datetime.strptime("2000-10-17", "%Y-%m-%d"))) ,
     ]
 
-    default_locations = [
-        Location(id=1, street="Main Street", plz="10115", city="Berlin", country="Germany", house_number="42"),
-        Location(id=2, street="Baker Street", plz="NW1 6XE", city="London", country="United Kingdom", house_number="221B"),
-        Location(id=3, street="Elm Street", plz="90210", city="Beverly Hills", country="United States", house_number="5")
+    default_user_locations = [
+        Location(id=1, street="Main Street", plz="10115", city="Berlin", country="Germany", house_number="34"),
+        Location(id=2, street="Baker Street", plz="30219", city="London", country="United Kingdom", house_number="23P"),
+        Location(id=3, street="Postdammer Street", plz="38291", city="Beverly Hills", country="United States", house_number="53")
     ]
 
-    default_user_location = [
+    default_bridge_user_location = [
         UserLocation(user_id=1, location_id=1),
         UserLocation(user_id=2, location_id=2),
         UserLocation(user_id=3, location_id=3)
@@ -67,16 +67,30 @@ def add_default_data(db: db_dependency):
         CrowdFundProject(name="Smart Home Security System", description="An affordable, AI-powered home security system with remote monitoring and alert features.", current_fund=80000, fund_goal=200000, unit_price=4000,start_date=datetime.strptime("2024-06-01", "%Y-%m-%d"), last_date=datetime.strptime("2024-10-01", "%Y-%m-%d"),   status=ProjectStatus.ACTIVE, funding_model=FundingModel.MICRO_INVESTMENT, owner_id=3)
     ]
 
+    default_cfp_locations = [
+        Location(id=4, street="Baker Street", plz="3104u8", city="London", country="United Kingdom",
+        house_number="10"),
+        Location(id=5, street="Apple Street",plz="73104",city="Paris",country="France",house_number="5"),Location(id=6,street="Pinapple Lane",plz="30194",city="New York",country="United States",house_number="293")
+    ]
+
+    default_bridge_cfp_locations = [
+        CrowdFundProjectLocation(crowd_fund_project_id=1, location_id=4),
+        CrowdFundProjectLocation(crowd_fund_project_id=2, location_id=5),
+        CrowdFundProjectLocation(crowd_fund_project_id=3, location_id=6)
+    ]
+
     for i in range(0,len(default_users)):
 
         existing_user = db.query(User).filter(User.username == default_users[i].username).first()
         if existing_user is None:
             db.add(default_users[i])
-            db.add(default_locations[i])
-            db.add(default_user_location[i])
+            db.add(default_user_locations[i])
+            db.add(default_bridge_user_location[i])
             default_crowd_fund_projects[i].update_progress()
             default_crowd_fund_projects[i].update_valuation()
             db.add(default_crowd_fund_projects[i])
+            db.add(default_cfp_locations[i])
+            db.add(default_bridge_cfp_locations[i])
     db.commit()
 
 @app.on_event("startup")
