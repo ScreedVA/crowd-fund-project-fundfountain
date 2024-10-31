@@ -79,21 +79,31 @@ const ProjectDetails: React.FC<ProjectDetailsProps> = ({
     sendInvestRequest();
   };
 
+  const isfundingProgressValid = () => {
+    if (
+      projectDetails?.fundingProgress !== undefined &&
+      projectDetails.fundingProgress > 0
+    ) {
+      return true;
+    }
+    return false;
+  };
+
   return (
     <>
       <div className="project-details-container">
         <h1>{projectDetails?.name}</h1>
         <h3 id="project-status">Status:{projectDetails?.status}</h3>
         <p id="project-description">{projectDetails?.description}</p>
-        {projectDetails?.fundingProgress && (
+        {isfundingProgressValid() && (
           <ProgressBar
-            percentage={projectDetails.fundingProgress}
+            percentage={projectDetails!.fundingProgress}
           ></ProgressBar>
         )}
         <div className="project-box">
           <div className="project-box-field">
-            <h4>Fund Goal: {projectDetails?.fundGoal}</h4>
-            <h4>Current Fund: {projectDetails?.currentFund}</h4>
+            <h4>Fund Goal: ${projectDetails?.fundGoal}</h4>
+            <h4>Current Fund: ${projectDetails?.currentFund}</h4>
           </div>
           <div className="project-box-field">
             <h4>Start Date: {projectDetails?.startDate}</h4>

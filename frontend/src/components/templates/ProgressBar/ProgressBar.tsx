@@ -7,7 +7,6 @@ type ProgressBarProps = {
 
 const ProgressBar: React.FC<ProgressBarProps> = ({ percentage }) => {
   // Assumes `percentage` is in the 0-100 range for width styling
-  const progressPercentage = Math.min(Math.max(percentage, 0), 100);
 
   return (
     <div className="progress-bar-container">
