@@ -57,7 +57,7 @@ async def read_project_by_id(project_id: int, db: db_dependency):
 
     return cfp_response
 
-@router.post("/")
+@router.post("/", status_code=status.HTTP_201_CREATED)
 async def create_project(db: db_dependency, user: user_dependency,  request: CreateCFProject,):
     if not user:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="User not authorized, cannot create new project")
@@ -88,9 +88,9 @@ async def create_project(db: db_dependency, user: user_dependency,  request: Cre
 
         db.add(bridge_cfp_location_model)
         db.commit()
-    print(cfp_model.total_units)
 
     return {"crowd_fund_model":transform_to_cfp_details_schema_from_model(cfp_model), "location_model": transform_to_location_read_schema_from_model(location_model)}
+
 
 @router.put("/{project_id}", status_code=status.HTTP_201_CREATED)
 async def update_project(request: UpdateCFProject, project_id: int,user: user_dependency, db: db_dependency):
@@ -116,7 +116,7 @@ async def update_project(request: UpdateCFProject, project_id: int,user: user_de
 
     
 
-@router.put("/invest/{project_id}")
+@router.put("/invest/{project_id}", status_code=status.HTTP_201_CREATED)
 async def invest(project_id: int, invest_request: InvestRequest, db: db_dependency, user: user_dependency):
     if not user:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="User not authorized, cannot invest into this project")
@@ -146,8 +146,10 @@ async def invest(project_id: int, invest_request: InvestRequest, db: db_dependen
         investor_id=user["id"],
         status=InvestmentStatus.PAID,
     )
+
     if cfp_model.funding_model == FundingModel.FIXED_PRICE:
         investment_bridge_model.unit_count = invest_request.unit_count
+
     elif cfp_model.funding_model == FundingModel.MICRO_INVESTMENT:
         share_percentage = round((invest_request.amount / cfp_model.valuation) * 100, 2)
         investment_bridge_model.share_percentage = share_percentage
@@ -155,7 +157,7 @@ async def invest(project_id: int, invest_request: InvestRequest, db: db_dependen
     db.add(investment_bridge_model)
     db.commit()
     db.refresh(investment_bridge_model)
-    return {"crowdFundModel": cfp_model, "investmentBridgeModel": investment_bridge_model}
+    return {"investmentBridgeModel": investment_bridge_model}
 
 
 

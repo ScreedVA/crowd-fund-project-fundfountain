@@ -6,7 +6,7 @@ from starlette import status
 from models import User, Location
 from .auth_router import get_current_user
 from schemas.user_schemas import UpdateUserRequest
-from services import transform_user_from_model, transform_to_location_read_schema_from_model, transform_user_sum_from_model
+from services import transform_to_read_user_schema_from_model, transform_to_location_read_schema_from_model, transform_to_user_summary_schema_from_model
 
 router = APIRouter(
     prefix='/user',
@@ -29,7 +29,7 @@ async def read_all_users(db: db_dependency):
     users = db.query(User).all()
     if not users:
         raise HTTPException(status_code=404, detail="Users not found")
-    transform_users = [transform_user_sum_from_model(user) for user in users]
+    transform_users = [transform_to_user_summary_schema_from_model(user) for user in users]
     return {"users": transform_users}
 
 @router.get("/readCurrentUser", status_code=status.HTTP_200_OK)
@@ -37,7 +37,7 @@ async def read_current_user(db: db_dependency, user: user_dependency):
     if user is None:
         raise HTTPException(status_code=401, detail="Authentication failed")
     user = db.query(User).filter(User.id == user.get("id")).first()
-    transformed_user = transform_user_from_model(user)
+    transformed_user = transform_to_read_user_schema_from_model(user)
     if user.bridgeLocations:
         location = db.query(Location).filter(Location.id == user.bridgeLocations[0].location_id).first()
         transformed_user.location = transform_to_location_read_schema_from_model(location)

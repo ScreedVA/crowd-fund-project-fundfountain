@@ -17,8 +17,7 @@ interface UserBaseModel {
   lastName: string;
   dateOfBirth: string;
   isAdmin: boolean;
-  isInvestor: boolean;
-  isProjectOwner: boolean;
+  back_account_balance?: number;
 }
 
 export interface CreateUserRequest extends UserBaseModel {

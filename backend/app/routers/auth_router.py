@@ -84,8 +84,6 @@ async def register_user_for_access_token(db: db_dependency,
         hashed_password=bcrypt_context.hash(create_user_request.password),
         date_of_birth=datetime.date(datetime.strptime(create_user_request.date_of_birth, "%Y-%m-%d")),
         is_admin=create_user_request.is_admin,
-        is_project_owner=create_user_request.is_project_owner,
-        is_investor=create_user_request.is_investor,
         is_active=True
     )
 

@@ -26,6 +26,8 @@ class CrowdFundProject(TimeStampModel):
     bridge_locations = relationship("CrowdFundProjectLocation", back_populates="crowd_fund_project")
     bridge_investments = relationship("Investment", back_populates="crowd_fund_project")
     
+
+    # Fire if factors (fund_goal/unit_price) change
     def update_valuation(self):
         self.valuation =  (self.fund_goal // self.unit_price) * self.unit_price
         if self.valuation < self.fund_goal:
@@ -34,6 +36,7 @@ class CrowdFundProject(TimeStampModel):
             self.total_units = self.fund_goal // self.unit_price
 
         
+    # Fire if factors (fund_goal/current_fund) change
     def update_progress(self):
         if self.fund_goal > 0 and self.current_fund != None:
             self.funding_progress = round((self.current_fund / self.fund_goal) * 100, 2)

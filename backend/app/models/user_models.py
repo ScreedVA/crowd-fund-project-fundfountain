@@ -14,8 +14,6 @@ class User(TimeStampModel):
     last_name = Column(String(100))
     is_active = Column(Boolean, default=True)
     is_admin = Column(Boolean, default=False)
-    is_project_owner = Column(Boolean, default=False)
-    is_investor = Column(Boolean, default=False)
     date_of_birth = Column(Date, nullable=False)
     bank_account_balance = Column(Integer)
 
@@ -31,8 +29,6 @@ class User(TimeStampModel):
         self.date_of_birth = datetime.strptime(request.date_of_birth, "%Y-%m-%d")
         self.email = request.email
         self.is_admin = request.is_admin
-        self.is_investor = request.is_investor
-        self.is_project_owner = request.is_project_owner
 
     def deposite_balance(self, amount: int):
         self.bank_account_balance += amount

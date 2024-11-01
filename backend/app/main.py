@@ -43,8 +43,8 @@ db_dependency = Annotated[Session, Depends(get_db)]
 def add_default_data(db: db_dependency):
     default_users = [
         User(username="alice", email="alice@example.com", hashed_password=auth_router.bcrypt_context.hash("123"), first_name="alice", last_name="doe", is_admin=True,  date_of_birth=datetime.date(datetime.strptime("2000-03-17", "%Y-%m-%d"))),
-        User(username="bob", email="bob@example.com", hashed_password=auth_router.bcrypt_context.hash("123"), first_name="bob", last_name="tree", is_project_owner=True, date_of_birth=datetime.date(datetime.strptime("1994-10-17", "%Y-%m-%d"))),
-        User( username="charlie", email="charlie@example.com", hashed_password=auth_router.bcrypt_context.hash("123"), first_name="charlie", last_name="smith", is_investor=True, date_of_birth=datetime.date(datetime.strptime("2000-10-17", "%Y-%m-%d"))) ,
+        User(username="bob", email="bob@example.com", hashed_password=auth_router.bcrypt_context.hash("123"), first_name="bob", last_name="tree", date_of_birth=datetime.date(datetime.strptime("1994-10-17", "%Y-%m-%d"))),
+        User( username="charlie", email="charlie@example.com", hashed_password=auth_router.bcrypt_context.hash("123"), first_name="charlie", last_name="smith", date_of_birth=datetime.date(datetime.strptime("2000-10-17", "%Y-%m-%d"))) ,
     ]
 
     default_user_locations = [

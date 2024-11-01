@@ -6,71 +6,52 @@ import {
   RegisterForToken,
 } from "../../../../../services/AuthService";
 import { CreateUserRequest, tokenModel } from "../../../../../models/UserModel";
-import { isObjectAnyFieldNotEmpty } from "../../../../../services/CommonService";
+import {
+  isLocationField,
+  isObjectAnyFieldNotEmpty,
+} from "../../../../../services/CommonService";
 import { CreateLocationRequest } from "../../../../../models/LocationModel";
 function RegisterForm() {
   const { login } = useContext(AuthContext);
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [username, setUsername] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [registerDetails, setRegisterDetails] = useState<CreateUserRequest>();
   const [passwordConfirm, setPasswordConfirm] = useState("");
-  const [dateOfBirth, setDateOfBirth] = useState("");
-  const [roles, setRoles] = useState({
-    isAdmin: false,
-    isProjectOwner: false,
-    isInvestor: false,
-  });
-  const [street, setStreet] = useState("");
-  const [houseNumber, setHouseNumber] = useState("");
-  const [city, setCity] = useState("");
-  const [country, setCountry] = useState("");
-  const [plz, setPlz] = useState("");
-
   const navigate = useNavigate();
 
-  function handleRoleChange(event: any) {
-    const { name, checked } = event.target;
-    setRoles((prevRoles) => ({
-      ...prevRoles,
-      [name]: checked,
-    }));
+  function handleRegisterDetailsChange(event: any) {
+    const { name, value } = event.target;
+
+    setRegisterDetails((prevState: any) => {
+      if (isLocationField(name)) {
+        return {
+          ...prevState,
+          location: {
+            ...prevState?.location,
+            [name]: value,
+          },
+        };
+      }
+
+      return {
+        ...prevState,
+        [name]: value,
+      };
+    });
+    console.log(registerDetails);
+    console.log(`name: ${name} value: ${value}`);
   }
 
   async function handleFormSubmit(event: FormEvent) {
     event.preventDefault();
 
-    if (password !== passwordConfirm) {
+    if (registerDetails?.password !== passwordConfirm) {
       alert("Passwords do not match");
     }
 
-    const locationRequest: CreateLocationRequest = {
-      street,
-      houseNumber,
-      city,
-      country,
-      plz,
-    };
-
-    const userRequest: CreateUserRequest = {
-      firstName,
-      lastName,
-      username,
-      email,
-      password,
-      dateOfBirth,
-      isAdmin: roles.isAdmin,
-      isProjectOwner: roles.isProjectOwner,
-      isInvestor: roles.isInvestor,
-      location: isObjectAnyFieldNotEmpty(locationRequest)
-        ? locationRequest
-        : undefined,
-    };
-
-    const tokenResponse: tokenModel = await RegisterForToken(userRequest);
-    login(tokenResponse["access_token"], tokenResponse["refresh_token"]);
-    navigate("/user");
+    if (registerDetails) {
+      const tokenResponse: tokenModel = await RegisterForToken(registerDetails);
+      login(tokenResponse["access_token"], tokenResponse["refresh_token"]);
+      navigate("/user");
+    }
   }
 
   return (
@@ -85,7 +66,7 @@ function RegisterForm() {
                 type="text"
                 placeholder="First Name"
                 name="firstName"
-                onChange={(e) => setFirstName(e.target.value)}
+                onChange={handleRegisterDetailsChange}
               />
             </div>
             <div className="input-field reg">
@@ -93,7 +74,7 @@ function RegisterForm() {
                 type="text"
                 placeholder="Last Name"
                 name="lastName"
-                onChange={(e) => setLastName(e.target.value)}
+                onChange={handleRegisterDetailsChange}
               />
             </div>
           </div>
@@ -104,7 +85,7 @@ function RegisterForm() {
                 type="text"
                 placeholder="*Username"
                 name="username"
-                onChange={(e) => setUsername(e.target.value)}
+                onChange={handleRegisterDetailsChange}
                 required
               />
             </div>
@@ -113,7 +94,7 @@ function RegisterForm() {
                 type="email"
                 placeholder="*Email"
                 name="email"
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={handleRegisterDetailsChange}
                 required
               />
             </div>
@@ -125,7 +106,7 @@ function RegisterForm() {
                 type="password"
                 placeholder="*Password"
                 name="password"
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={handleRegisterDetailsChange}
                 required
               />
             </div>
@@ -146,38 +127,8 @@ function RegisterForm() {
               <input
                 type="date"
                 name="dateOfBirth"
-                onChange={(e) => setDateOfBirth(e.target.value)}
+                onChange={handleRegisterDetailsChange}
                 required
-              />
-            </div>
-          </div>
-
-          <div className="input-box reg checkboxes">
-            <div className="input-field reg" style={{ gridColumn: 1 }}>
-              <label htmlFor="isAdmin">Admin</label>
-              <input
-                type="checkbox"
-                name="isAdmin"
-                checked={roles.isAdmin}
-                onChange={handleRoleChange}
-              />
-            </div>
-            <div className="input-field reg" style={{ gridColumn: 2 }}>
-              <label htmlFor="isProjectOwner">Project Owner</label>
-              <input
-                type="checkbox"
-                name="isProjectOwner"
-                checked={roles.isProjectOwner}
-                onChange={handleRoleChange}
-              />
-            </div>
-            <div className="input-field reg" style={{ gridColumn: 3 }}>
-              <label htmlFor="isInvestor">Investor</label>
-              <input
-                type="checkbox"
-                name="isInvestor"
-                checked={roles.isInvestor}
-                onChange={handleRoleChange}
               />
             </div>
           </div>
@@ -188,7 +139,7 @@ function RegisterForm() {
                 type="text"
                 placeholder="Street"
                 name="street"
-                onChange={(e) => setStreet(e.target.value)}
+                onChange={handleRegisterDetailsChange}
               />
             </div>
 
@@ -197,7 +148,7 @@ function RegisterForm() {
                 type="text"
                 placeholder="House Number"
                 name="houseNumber"
-                onChange={(e) => setHouseNumber(e.target.value)}
+                onChange={handleRegisterDetailsChange}
               />
             </div>
           </div>
@@ -208,7 +159,7 @@ function RegisterForm() {
                 type="text"
                 placeholder="City"
                 name="city"
-                onChange={(e) => setCity(e.target.value)}
+                onChange={handleRegisterDetailsChange}
               />
             </div>
             <div className="input-field reg">
@@ -216,7 +167,7 @@ function RegisterForm() {
                 type="text"
                 placeholder="Country"
                 name="country"
-                onChange={(e) => setCountry(e.target.value)}
+                onChange={handleRegisterDetailsChange}
               />
             </div>
           </div>
@@ -227,7 +178,7 @@ function RegisterForm() {
                 type="text"
                 placeholder="PLZ"
                 name="plz"
-                onChange={(e) => setPlz(e.target.value)}
+                onChange={handleRegisterDetailsChange}
               />
             </div>
           </div>

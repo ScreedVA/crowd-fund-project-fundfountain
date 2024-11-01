@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import {
+  CreateCFProjectModel,
   FundingModel,
   ProjectStatus,
   ReadCFProjectModel as ReadCFProjectRequest,
@@ -12,6 +13,7 @@ import {
   fetchProjectByIdHttpRequest,
   updateCFProjectHttpRequest,
 } from "../../../services/ProjectService";
+import { isLocationField } from "../../../services/CommonService";
 
 interface ProjectFormProps {
   projectId?: number;
@@ -46,13 +48,6 @@ const ProjectForm: React.FC<ProjectFormProps> = ({ projectId }) => {
     const { name, value, type } = event.target;
     setCurrentProjectDetails((prevFields) => {
       const updatedFields = prevFields ?? ({} as ReadCFProjectRequest);
-      const isLocationField = [
-        "street",
-        "plz",
-        "city",
-        "country",
-        "houseNumber",
-      ].includes(name);
 
       let parsedValue: any;
       if (name === "status") {
@@ -63,8 +58,7 @@ const ProjectForm: React.FC<ProjectFormProps> = ({ projectId }) => {
         parsedValue = type === "number" ? +value : value;
       }
 
-      console.log(`name: ${name} value: ${value}`);
-      if (isLocationField) {
+      if (isLocationField(name)) {
         return {
           ...updatedFields,
           location: {
@@ -95,7 +89,7 @@ const ProjectForm: React.FC<ProjectFormProps> = ({ projectId }) => {
         await updateCFProjectHttpRequest(projectId, requestBody);
       } else {
         await createCFProjectHttpRequest(
-          currentProjectDetails as ReadCFProjectRequest
+          currentProjectDetails as CreateCFProjectModel
         );
       }
     }

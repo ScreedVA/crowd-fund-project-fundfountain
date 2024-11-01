@@ -6,8 +6,6 @@ class ReadUserSummary(BaseModel):
     id: int
     username: str = Field(min_length=3)
     is_admin: bool
-    is_project_owner: bool
-    is_investor: bool
 
 
 class UserBaseModel(BaseModel):
@@ -17,9 +15,6 @@ class UserBaseModel(BaseModel):
     last_name: Optional[str] = Field(None, alias="lastName") 
     date_of_birth: str = Field(..., alias="dateOfBirth")
     is_admin: bool = Field(False, alias="isAdmin")
-    is_project_owner: bool = Field(False, alias="isProjectOwner")
-    is_investor: bool = Field(False, alias="isInvestor")
-
     class Config:
         populate_by_name = True
 
@@ -34,7 +29,8 @@ class UpdateUserRequest(UserBaseModel):
 
 
 class ReadUserRequest(UserBaseModel):
-    id: int 
+    id: int
+    bank_account_balance: Optional[int] = None 
     location: Optional[ReadLocationRequest] = None
 
 class Token(BaseModel):
