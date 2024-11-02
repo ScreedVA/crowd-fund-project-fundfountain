@@ -1,5 +1,5 @@
 import React, { createContext, useState, useEffect, ReactNode } from "react";
-import { CreateUserRequest, tokenModel } from "../models/UserModel";
+import { CreateUserModel, tokenModel } from "../models/UserModel";
 import {
   getAccessToken,
   getRefreshToken,
@@ -65,7 +65,7 @@ export async function handle401Exception(
 }
 
 export async function RegisterForToken(
-  createUserRequest: CreateUserRequest
+  createUserRequest: CreateUserModel
 ): Promise<tokenModel> {
   const response = await fetch(`${API_BASE_URL}/register`, {
     method: "POST",

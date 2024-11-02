@@ -5,16 +5,14 @@ import {
   AuthContext,
   RegisterForToken,
 } from "../../../../../services/AuthService";
-import { CreateUserRequest, tokenModel } from "../../../../../models/UserModel";
-import {
-  isLocationField,
-  isObjectAnyFieldNotEmpty,
-} from "../../../../../services/CommonService";
-import { CreateLocationRequest } from "../../../../../models/LocationModel";
+import { CreateUserModel, tokenModel } from "../../../../../models/UserModel";
+import { isLocationField } from "../../../../../services/CommonService";
+
 function RegisterForm() {
   const { login } = useContext(AuthContext);
-  const [registerDetails, setRegisterDetails] = useState<CreateUserRequest>();
+  const [registerDetails, setRegisterDetails] = useState<CreateUserModel>();
   const [passwordConfirm, setPasswordConfirm] = useState("");
+  const [errors, setErrors] = useState({});
   const navigate = useNavigate();
 
   function handleRegisterDetailsChange(event: any) {
@@ -36,8 +34,6 @@ function RegisterForm() {
         [name]: value,
       };
     });
-    console.log(registerDetails);
-    console.log(`name: ${name} value: ${value}`);
   }
 
   async function handleFormSubmit(event: FormEvent) {

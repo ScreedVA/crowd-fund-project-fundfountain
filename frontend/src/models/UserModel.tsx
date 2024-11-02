@@ -17,20 +17,20 @@ interface UserBaseModel {
   lastName: string;
   dateOfBirth: string;
   isAdmin: boolean;
-  back_account_balance?: number;
 }
 
-export interface CreateUserRequest extends UserBaseModel {
+export interface CreateUserModel extends UserBaseModel {
   password: string;
   location?: CreateLocationRequest;
 }
 
-export interface ReadUserRequest extends UserBaseModel {
+export interface ReadUserModel extends UserBaseModel {
   id: number;
+  back_account_balance?: number;
   location?: ReadLocationRequest;
 }
 
-export interface UpdateUserRequest extends UserBaseModel {
+export interface UpdateUserModel extends UserBaseModel {
   location?: UpdateLocationRequest;
 }
 

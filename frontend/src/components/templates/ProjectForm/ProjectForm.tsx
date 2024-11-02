@@ -14,6 +14,9 @@ import {
   updateCFProjectHttpRequest,
 } from "../../../services/ProjectService";
 import { isLocationField } from "../../../services/CommonService";
+import { validateCreateCFProjectModel } from "../../../services/ValidationService";
+import useToast from "../../../services/ToasterService";
+import Toaster from "../Toaster/Toaster";
 
 interface ProjectFormProps {
   projectId?: number;
@@ -22,6 +25,8 @@ interface ProjectFormProps {
 const ProjectForm: React.FC<ProjectFormProps> = ({ projectId }) => {
   const [currentProjectDetails, setCurrentProjectDetails] =
     useState<ReadCFProjectRequest>();
+  const [errors, setErrors] = useState<any>({});
+  const { toast, showToast, hideToast } = useToast();
 
   useEffect(() => {
     async function setProjectById() {
@@ -88,9 +93,19 @@ const ProjectForm: React.FC<ProjectFormProps> = ({ projectId }) => {
         };
         await updateCFProjectHttpRequest(projectId, requestBody);
       } else {
-        await createCFProjectHttpRequest(
-          currentProjectDetails as CreateCFProjectModel
+        const validationErrors = validateCreateCFProjectModel(
+          currentProjectDetails
         );
+        setErrors(validationErrors);
+        if (Object.keys(validationErrors).length === 0) {
+          console.log(validationErrors);
+          const response = await createCFProjectHttpRequest(
+            currentProjectDetails as CreateCFProjectModel
+          );
+          if (response.ok) {
+            showToast("New project created", "success");
+          }
+        }
       }
     }
   }
@@ -101,23 +116,29 @@ const ProjectForm: React.FC<ProjectFormProps> = ({ projectId }) => {
         <form action="" className="project-form">
           <div className="project-form-input-box one">
             <div className="project-form-input-field">
-              <label htmlFor="name">Name</label>
+              <label htmlFor="name">Name*</label>
               <input
                 name="name"
                 type="text"
                 value={currentProjectDetails?.name || ""}
                 onChange={handleCurrentDetailsChanged}
               />
+              {errors.name && (
+                <small style={{ color: "red" }}>{errors.name}</small>
+              )}
             </div>
           </div>
           <div className="project-form-input-box one">
             <div className="project-form-input-field">
-              <label htmlFor="description">Description</label>
+              <label htmlFor="description">Description*</label>
               <textarea
                 name="description"
                 value={currentProjectDetails?.description || ""}
                 onChange={handleCurrentDetailsChanged}
               ></textarea>
+              {errors.description && (
+                <small style={{ color: "red" }}>{errors.description}</small>
+              )}
             </div>
           </div>
 
@@ -126,36 +147,35 @@ const ProjectForm: React.FC<ProjectFormProps> = ({ projectId }) => {
             <>
               <div className="project-form-input-box four">
                 <div className="project-form-input-field">
-                  <label htmlFor="fundGoal">Fund Goal</label>
+                  <label htmlFor="fundGoal">Fund Goal*</label>
                   <input
                     type="number"
                     name="fundGoal"
-                    value={
-                      currentProjectDetails?.fundGoal ||
-                      FundingModel.FIXED_PRICE
-                    }
+                    value={currentProjectDetails?.fundGoal || ""}
                     onChange={handleCurrentDetailsChanged}
                   />
+                  {errors.fundGoal && (
+                    <small style={{ color: "red" }}>{errors.fundGoal}</small>
+                  )}
                 </div>
                 <div className="project-form-input-field">
-                  <label htmlFor="unitPrice">Unit Price</label>
+                  <label htmlFor="unitPrice">Unit Price*</label>
                   <input
                     type="number"
                     name="unitPrice"
-                    value={
-                      currentProjectDetails?.unitPrice ||
-                      FundingModel.MICRO_INVESTMENT
-                    }
+                    value={currentProjectDetails?.unitPrice || ""}
                     onChange={handleCurrentDetailsChanged}
                   />
+                  {errors.unitPrice && (
+                    <small style={{ color: "red" }}>{errors.unitPrice}</small>
+                  )}
                 </div>
                 <div className="project-form-input-field select">
-                  <label htmlFor="fundingModel">Funding Model</label>
+                  <label htmlFor="fundingModel">Funding Model*</label>
                   <select
                     name="fundingModel"
                     value={currentProjectDetails?.fundingModel || ""}
                     onChange={handleCurrentDetailsChanged}
-                    required
                   >
                     <option value={FundingModel.FIXED_PRICE}>
                       {FundingModel.FIXED_PRICE}
@@ -163,15 +183,19 @@ const ProjectForm: React.FC<ProjectFormProps> = ({ projectId }) => {
                     <option value={FundingModel.MICRO_INVESTMENT}>
                       {FundingModel.MICRO_INVESTMENT}
                     </option>
+                    {errors.fundingModel && (
+                      <small style={{ color: "red" }}>
+                        {errors.fundingMOdel}
+                      </small>
+                    )}
                   </select>
                 </div>
                 <div className="project-form-input-field select">
-                  <label htmlFor="status">Project Status</label>
+                  <label htmlFor="status">Project Status*</label>
                   <select
                     name="status"
                     value={currentProjectDetails?.status || ""}
                     onChange={handleCurrentDetailsChanged}
-                    required
                   >
                     <option value={ProjectStatus.ACTIVE}>
                       {ProjectStatus.ACTIVE}
@@ -185,27 +209,36 @@ const ProjectForm: React.FC<ProjectFormProps> = ({ projectId }) => {
                     <option value={ProjectStatus.PENDING_APPROVAL}>
                       {ProjectStatus.PENDING_APPROVAL}
                     </option>
+                    {errors.status && (
+                      <small style={{ color: "red" }}>{errors.status}</small>
+                    )}
                   </select>
                 </div>
               </div>
               <div className="project-form-input-box two">
                 <div className="project-form-input-field">
-                  <label htmlFor="startDate">Start Date:</label>
+                  <label htmlFor="startDate">Start Date*</label>
                   <input
                     type="date"
                     name="startDate"
                     value={currentProjectDetails?.startDate || ""}
                     onChange={handleCurrentDetailsChanged}
                   />
+                  {errors.startDate && (
+                    <small style={{ color: "red" }}>{errors.startDate}</small>
+                  )}
                 </div>
                 <div className="project-form-input-field">
-                  <label htmlFor="lastDate">End Date:</label>
+                  <label htmlFor="lastDate">End Date*</label>
                   <input
                     type="date"
                     name="lastDate"
                     value={currentProjectDetails?.lastDate || ""}
                     onChange={handleCurrentDetailsChanged}
                   />
+                  {errors.lastDate && (
+                    <small style={{ color: "red" }}>{errors.lastDate}</small>
+                  )}
                 </div>
               </div>
             </>
@@ -276,6 +309,13 @@ const ProjectForm: React.FC<ProjectFormProps> = ({ projectId }) => {
             </div>
           </div>
         </form>
+        {toast.isVisible && (
+          <Toaster
+            message={toast.message}
+            type={toast.type}
+            onClose={hideToast}
+          ></Toaster>
+        )}
       </div>
     </>
   );

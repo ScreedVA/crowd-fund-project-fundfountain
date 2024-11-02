@@ -89,7 +89,6 @@ async def create_project(db: db_dependency, user: user_dependency,  request: Cre
         db.add(bridge_cfp_location_model)
         db.commit()
 
-    return {"crowd_fund_model":transform_to_cfp_details_schema_from_model(cfp_model), "location_model": transform_to_location_read_schema_from_model(location_model)}
 
 
 @router.put("/{project_id}", status_code=status.HTTP_201_CREATED)
@@ -105,10 +104,11 @@ async def update_project(request: UpdateCFProject, project_id: int,user: user_de
     if cfp_model not in cfp_model_list_by_owner:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="User not authorized, cannot update this project")
 
-    location = db.query(Location).filter(Location.id == cfp_model.bridge_locations[0].location_id).first()
-    
     cfp_model.update_from_request(request)
-    location.update_from_request(request.location) 
+    
+    if cfp_model.bridge_locations:
+        location = db.query(Location).filter(Location.id == cfp_model.bridge_locations[0].location_id).first()
+        location.update_from_request(request.location) 
 
     db.add(cfp_model)
     db.add(location)

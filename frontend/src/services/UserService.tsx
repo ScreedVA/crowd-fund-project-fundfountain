@@ -1,13 +1,11 @@
-import { ReadUserRequest, UpdateUserRequest } from "../models/UserModel";
+import { ReadUserModel, UpdateUserModel } from "../models/UserModel";
 import { handle401Exception } from "./AuthService";
 import { API_BASE_DOMAIN } from "./CommonService";
 import { getAccessToken } from "./StorageService";
 
 const API_BASE_URL: string = `${API_BASE_DOMAIN}/user`;
 
-export async function getCurrentUser(): Promise<
-  ReadUserRequest | null | undefined
-> {
+export async function getCurrentUser(): Promise<ReadUserModel | undefined> {
   try {
     let accessToken: string | null = getAccessToken();
     let response = await fetch(`${API_BASE_URL}/readCurrentUser`, {
@@ -25,25 +23,25 @@ export async function getCurrentUser(): Promise<
         );
       } else {
         // console.error(`Error: (${response.status} ${response.statusText})`);
-        return null;
+        return;
       }
     }
 
     if (response.ok) {
-      const resData: ReadUserRequest = await response.json();
+      const resData: ReadUserModel = await response.json();
       return resData;
     } else {
       // console.error(`Error: (${response.status} ${response.statusText})`);
-      return null;
+      return;
     }
   } catch (error) {
     // console.error("Network error or fetch error:", error);
-    return null;
+    return;
   }
 }
 
 export async function updateCurrentUser(
-  requestBody: UpdateUserRequest,
+  requestBody: UpdateUserModel,
   userId: number
 ): Promise<any> {
   let accessToken: string | null = getAccessToken();

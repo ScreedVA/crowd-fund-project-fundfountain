@@ -1,115 +1,64 @@
 import { FormEvent, useEffect, useState } from "react";
 import "./UserForm.css";
-import {
-  ReadUserRequest,
-  UpdateUserRequest,
-} from "../../../../models/UserModel";
+import { ReadUserModel, UpdateUserModel } from "../../../../models/UserModel";
 import {
   getCurrentUser,
   updateCurrentUser,
 } from "../../../../services/UserService";
-import { UpdateLocationRequest } from "../../../../models/LocationModel";
-import { isObjectAnyFieldNotEmpty } from "../../../../services/CommonService";
+import { isLocationField } from "../../../../services/CommonService";
+
 function UserForm() {
-  const [id, setId] = useState<number>(0);
-  const [firstName, setFirstName] = useState<string>("");
-  const [lastName, setLastName] = useState<string>("");
-  const [username, setUsername] = useState<string>("");
-  const [email, setEmail] = useState<string>("");
-  const [dateOfBirth, setDateOfBirth] = useState<string>("");
-  const [roles, setRoles] = useState({
-    isAdmin: false,
-    isProjectOwner: false,
-    isInvestor: false,
-  });
-  const [street, setStreet] = useState<string>("");
-  const [houseNumber, setHouseNumber] = useState<string>("");
-  const [city, setCity] = useState<string>("");
-  const [country, setCountry] = useState<string>("");
-  const [plz, setPlz] = useState<string>("");
-
+  const [currentUser, setCurrentUser] = useState<ReadUserModel>();
   useEffect(() => {
-    async function setCurrentUser() {
-      const currentUser: ReadUserRequest | null | undefined =
-        await getCurrentUser();
-      if (currentUser) {
-        setId(currentUser.id);
-        setFirstName(currentUser.firstName);
-        setLastName(currentUser.lastName);
-        setUsername(currentUser.username);
-        setEmail(currentUser.email);
-        setUsername(currentUser.username);
-        setDateOfBirth(currentUser.dateOfBirth);
-        setRoles({
-          isAdmin: currentUser.isAdmin,
-          isInvestor: currentUser.isInvestor,
-          isProjectOwner: currentUser.isProjectOwner,
-        });
-        if (currentUser.location) {
-          const currentLocation = currentUser.location;
-          currentLocation.street !== null &&
-            setStreet(currentUser.location.street!);
-          currentLocation.houseNumber !== null &&
-            setHouseNumber(currentUser.location.houseNumber!);
-          currentLocation.city !== null && setCity(currentUser.location.city!);
-          currentLocation.country !== null &&
-            setCountry(currentUser.location.country!);
-          currentLocation.plz !== null && setPlz(currentUser.location.plz!);
-        }
-      }
+    async function setUser() {
+      setCurrentUser(await getCurrentUser());
     }
-    setCurrentUser();
+    setUser();
   }, []);
-
-  function handleRoleChange(event: any) {
-    const { name, checked } = event.target;
-    setRoles((prevRoles) => ({
-      ...prevRoles,
-      [name]: checked,
-    }));
-  }
 
   async function handleFormSubmit(event: FormEvent) {
     event.preventDefault();
 
-    const locationRequest: UpdateLocationRequest = {
-      street,
-      houseNumber,
-      city,
-      country,
-      plz,
-    };
+    if (currentUser) {
+      await updateCurrentUser(currentUser as UpdateUserModel, currentUser.id);
+      console.log(currentUser as UpdateUserModel);
+    }
+  }
 
-    const userRequest: UpdateUserRequest = {
-      firstName,
-      lastName,
-      username,
-      email,
-      dateOfBirth,
-      isAdmin: roles.isAdmin,
-      isInvestor: roles.isInvestor,
-      isProjectOwner: roles.isProjectOwner,
-      location: isObjectAnyFieldNotEmpty(locationRequest)
-        ? locationRequest
-        : undefined,
-    };
+  function handleUserDetailsChange(event: any) {
+    const { name, value } = event.target;
 
-    await updateCurrentUser(userRequest, id);
+    setCurrentUser((prevState: any) => {
+      if (isLocationField(name)) {
+        return {
+          ...prevState,
+          location: {
+            ...prevState?.location,
+            [name]: value,
+          },
+        };
+      }
+
+      return {
+        ...prevState,
+        [name]: value,
+      };
+    });
   }
 
   return (
     <>
       <div className="user-form-wrapper">
         <form onSubmit={handleFormSubmit} className="user-form">
-          <div className="input-box-user four">
+          <div className="input-box-user two">
             <div className="input-field-user">
               <label htmlFor="username">Username</label>
               <input
                 type="text"
                 name="username"
                 placeholder="Username"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
+                value={currentUser?.username || ""}
+                onChange={handleUserDetailsChange}
               />
             </div>
             <div className="input-field-user">
@@ -118,18 +67,20 @@ function UserForm() {
                 type="email"
                 name="email"
                 placeholder="Email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                value={currentUser?.email || ""}
+                onChange={handleUserDetailsChange}
               />
             </div>
+          </div>
+          <div className="input-box-user three">
             <div className="input-field-user">
               <label htmlFor="firstName">First Name</label>
               <input
                 type="text"
                 name="firstName"
                 placeholder="First Name"
-                value={firstName}
-                onChange={(e) => setFirstName(e.target.value)}
+                value={currentUser?.firstName || ""}
+                onChange={handleUserDetailsChange}
               />
             </div>
             <div className="input-field-user">
@@ -138,47 +89,17 @@ function UserForm() {
                 type="text"
                 name="lastName"
                 placeholder="Last Name"
-                value={lastName}
-                onChange={(e) => setLastName(e.target.value)}
+                value={currentUser?.lastName || ""}
+                onChange={handleUserDetailsChange}
               />
             </div>
-          </div>
-
-          <div className="input-box-user 4">
             <div className="input-field-user">
               <label htmlFor="dateOfBirth">Date of Birth</label>
               <input
                 type="date"
                 name="dateOfBirth"
-                value={dateOfBirth}
-                onChange={(e) => setDateOfBirth(e.target.value)}
-              />
-            </div>
-            <div className="input-field-user checkbox">
-              <label htmlFor="isInvestor">Investor</label>
-              <input
-                type="checkbox"
-                name="isInvestor"
-                checked={roles.isInvestor}
-                onChange={handleRoleChange}
-              />
-            </div>
-            <div className="input-field-user checkbox">
-              <label htmlFor="isAdmin">Admin</label>
-              <input
-                type="checkbox"
-                name="isAdmin"
-                checked={roles.isAdmin}
-                onChange={handleRoleChange}
-              />
-            </div>
-            <div className="input-field-user checkbox">
-              <label htmlFor="isProjectOwner">Project Owner</label>
-              <input
-                type="checkbox"
-                name="isProjectOwner"
-                checked={roles.isProjectOwner}
-                onChange={handleRoleChange}
+                value={currentUser?.dateOfBirth || ""}
+                onChange={handleUserDetailsChange}
               />
             </div>
           </div>
@@ -190,8 +111,8 @@ function UserForm() {
                 type="text"
                 name="street"
                 placeholder="Street"
-                value={street}
-                onChange={(e) => setStreet(e.target.value)}
+                value={currentUser?.location?.street || ""}
+                onChange={handleUserDetailsChange}
               />
             </div>
             <div className="input-field-user">
@@ -200,8 +121,8 @@ function UserForm() {
                 type="text"
                 name="plz"
                 placeholder="PLZ"
-                value={plz}
-                onChange={(e) => setPlz(e.target.value)}
+                value={currentUser?.location?.plz || ""}
+                onChange={handleUserDetailsChange}
               />
             </div>
             <div className="input-field-user">
@@ -210,8 +131,8 @@ function UserForm() {
                 type="text"
                 name="city"
                 placeholder="City"
-                value={city}
-                onChange={(e) => setCity(e.target.value)}
+                value={currentUser?.location?.city || ""}
+                onChange={handleUserDetailsChange}
               />
             </div>
             <div className="input-field-user">
@@ -220,8 +141,8 @@ function UserForm() {
                 type="text"
                 name="country"
                 placeholder="Country"
-                value={country}
-                onChange={(e) => setCountry(e.target.value)}
+                value={currentUser?.location?.country || ""}
+                onChange={handleUserDetailsChange}
               />
             </div>
             <div className="input-field-user">
@@ -230,8 +151,8 @@ function UserForm() {
                 type="text"
                 name="houseNumber"
                 placeholder="House Number"
-                value={houseNumber}
-                onChange={(e) => setHouseNumber(e.target.value)}
+                value={currentUser?.location?.houseNumber || ""}
+                onChange={handleUserDetailsChange}
               />
             </div>
             <div className="button-box">

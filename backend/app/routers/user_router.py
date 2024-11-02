@@ -53,17 +53,21 @@ async def update_current_user(user_id: int, db: db_dependency, user: user_depend
     if user_id != user["id"]:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="User not authorized to update this entity")
     user = db.query(User).filter(User.id == user_id).first();
-    location = db.query(Location).filter(Location.id == user.bridgeLocations[0].location_id).first()
-   
     if not user:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
     
     user.update_from_request(update_user_request)
-    location.update_from_request(update_user_request.location)
-    db.add(location)
     db.add(user)
     db.commit()
     db.refresh(user)
+
+    if user.bridgeLocations:
+        location = db.query(Location).filter(Location.id == user.bridgeLocations[0].location_id).first()
+        location.update_from_request(update_user_request.location)
+        db.add(location)
+        db.commit()
+   
+    
 
     return user
 

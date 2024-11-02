@@ -104,8 +104,7 @@ export async function createCFProjectHttpRequest(
     }
   }
 
-  const resData: CreateCFProjectModel[] = await response.json();
-  return resData;
+  return response;
 }
 
 export async function updateCFProjectHttpRequest(
