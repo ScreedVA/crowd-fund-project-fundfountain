@@ -7,12 +7,16 @@ import {
 } from "../../../../../services/AuthService";
 import { CreateUserModel, tokenModel } from "../../../../../models/UserModel";
 import { isLocationField } from "../../../../../services/CommonService";
+import useToast from "../../../../../services/ToasterService";
+import { validateCreateUserModel } from "../../../../../services/ValidationService";
+import Toaster from "../../../../templates/Toaster/Toaster";
 
 function RegisterForm() {
   const { login } = useContext(AuthContext);
   const [registerDetails, setRegisterDetails] = useState<CreateUserModel>();
   const [passwordConfirm, setPasswordConfirm] = useState("");
-  const [errors, setErrors] = useState({});
+  const [errors, setErrors] = useState<any>({});
+  const { toast, showToast, hideToast } = useToast();
   const navigate = useNavigate();
 
   function handleRegisterDetailsChange(event: any) {
@@ -40,20 +44,35 @@ function RegisterForm() {
     event.preventDefault();
 
     if (registerDetails?.password !== passwordConfirm) {
-      alert("Passwords do not match");
+      setErrors((prevErrors: any) => ({
+        ...prevErrors,
+        passwordConfirm: "Confirmed password must be the same as password",
+      }));
     }
 
     if (registerDetails) {
-      const tokenResponse: tokenModel = await RegisterForToken(registerDetails);
-      login(tokenResponse["access_token"], tokenResponse["refresh_token"]);
-      navigate("/user");
+      const validationErrors = validateCreateUserModel(registerDetails);
+      setErrors(validationErrors);
+
+      if (Object.keys(validationErrors).length === 0) {
+        const response = await RegisterForToken(registerDetails);
+        const tokenResponse: tokenModel = await response.json();
+        login(tokenResponse["access_token"], tokenResponse["refresh_token"]);
+        navigate("/user");
+
+        if (response.ok) {
+          showToast("New project created", "success");
+        } else {
+          showToast(`Error Status: ${response.status} Error: ${response.text}`);
+        }
+      }
     }
   }
 
   return (
     <>
       <div className="wrapper-reg-form">
-        <form onSubmit={handleFormSubmit} className="register-form">
+        <form className="register-form">
           <h1>Registration</h1>
 
           <div className="input-box reg">
@@ -62,16 +81,24 @@ function RegisterForm() {
                 type="text"
                 placeholder="First Name"
                 name="firstName"
+                value={registerDetails?.firstName || ""}
                 onChange={handleRegisterDetailsChange}
               />
+              {errors.firstName && (
+                <small style={{ color: "red" }}>{errors.firstName}</small>
+              )}
             </div>
             <div className="input-field reg">
               <input
                 type="text"
                 placeholder="Last Name"
                 name="lastName"
+                value={registerDetails?.lastName || ""}
                 onChange={handleRegisterDetailsChange}
               />
+              {errors.lastName && (
+                <small style={{ color: "red" }}>{errors.lastName}</small>
+              )}
             </div>
           </div>
 
@@ -81,18 +108,24 @@ function RegisterForm() {
                 type="text"
                 placeholder="*Username"
                 name="username"
+                value={registerDetails?.username || ""}
                 onChange={handleRegisterDetailsChange}
-                required
               />
+              {errors.username && (
+                <small style={{ color: "red" }}>{errors.username}</small>
+              )}
             </div>
             <div className="input-field reg">
               <input
                 type="email"
                 placeholder="*Email"
                 name="email"
+                value={registerDetails?.email || ""}
                 onChange={handleRegisterDetailsChange}
-                required
               />
+              {errors.email && (
+                <small style={{ color: "red" }}>{errors.email}</small>
+              )}
             </div>
           </div>
 
@@ -102,18 +135,24 @@ function RegisterForm() {
                 type="password"
                 placeholder="*Password"
                 name="password"
+                value={registerDetails?.password || ""}
                 onChange={handleRegisterDetailsChange}
-                required
               />
+              {errors.password && (
+                <small style={{ color: "red" }}>{errors.password}</small>
+              )}
             </div>
             <div className="input-field reg">
               <input
                 type="password"
                 placeholder="*Confirm Password"
                 name="confirmPassword"
+                value={passwordConfirm || ""}
                 onChange={(e) => setPasswordConfirm(e.target.value)}
-                required
               />
+              {errors.passwordConfirm && (
+                <small style={{ color: "red" }}>{errors.passwordConfirm}</small>
+              )}
             </div>
           </div>
 
@@ -123,9 +162,12 @@ function RegisterForm() {
               <input
                 type="date"
                 name="dateOfBirth"
+                value={registerDetails?.dateOfBirth || ""}
                 onChange={handleRegisterDetailsChange}
-                required
               />
+              {errors.dateOfBirth && (
+                <small style={{ color: "red" }}>{errors.dateOfBirth}</small>
+              )}
             </div>
           </div>
 
@@ -135,6 +177,7 @@ function RegisterForm() {
                 type="text"
                 placeholder="Street"
                 name="street"
+                value={registerDetails?.location?.street || ""}
                 onChange={handleRegisterDetailsChange}
               />
             </div>
@@ -144,6 +187,7 @@ function RegisterForm() {
                 type="text"
                 placeholder="House Number"
                 name="houseNumber"
+                value={registerDetails?.location?.houseNumber || ""}
                 onChange={handleRegisterDetailsChange}
               />
             </div>
@@ -155,6 +199,7 @@ function RegisterForm() {
                 type="text"
                 placeholder="City"
                 name="city"
+                value={registerDetails?.location?.city || ""}
                 onChange={handleRegisterDetailsChange}
               />
             </div>
@@ -163,6 +208,7 @@ function RegisterForm() {
                 type="text"
                 placeholder="Country"
                 name="country"
+                value={registerDetails?.location?.country || ""}
                 onChange={handleRegisterDetailsChange}
               />
             </div>
@@ -174,12 +220,17 @@ function RegisterForm() {
                 type="text"
                 placeholder="PLZ"
                 name="plz"
+                value={registerDetails?.location?.plz || ""}
                 onChange={handleRegisterDetailsChange}
               />
             </div>
           </div>
 
-          <button className="register-button" type="submit">
+          <button
+            className="register-button"
+            onClick={handleFormSubmit}
+            type="submit"
+          >
             Sign Up
           </button>
           <div className="anch-reg">

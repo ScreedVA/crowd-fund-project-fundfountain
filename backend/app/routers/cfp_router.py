@@ -106,13 +106,16 @@ async def update_project(request: UpdateCFProject, project_id: int,user: user_de
 
     cfp_model.update_from_request(request)
     
+    db.add(cfp_model)
+    db.commit()
+    db.refresh(cfp_model)
+    
     if cfp_model.bridge_locations:
         location = db.query(Location).filter(Location.id == cfp_model.bridge_locations[0].location_id).first()
         location.update_from_request(request.location) 
+        db.add(location)
+        db.commit()
 
-    db.add(cfp_model)
-    db.add(location)
-    db.commit()
 
     
 

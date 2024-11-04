@@ -21,7 +21,6 @@ function UserForm() {
 
     if (currentUser) {
       await updateCurrentUser(currentUser as UpdateUserModel, currentUser.id);
-      console.log(currentUser as UpdateUserModel);
     }
   }
 

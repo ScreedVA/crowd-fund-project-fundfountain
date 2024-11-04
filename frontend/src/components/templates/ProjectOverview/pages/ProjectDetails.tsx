@@ -62,7 +62,6 @@ const ProjectDetails: React.FC<ProjectDetailsProps> = ({
       }
     } else if (projectDetails?.fundingModel == FundingModel.MICRO_INVESTMENT) {
       if (microInvestAmount < 1000) {
-        console.log(microInvestAmount);
         alert(`Invest Amount: ${microInvestAmount} must be atleast 1000`);
         return;
       }

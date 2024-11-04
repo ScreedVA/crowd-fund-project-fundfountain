@@ -133,8 +133,7 @@ export async function updateCFProjectHttpRequest(
     }
   }
 
-  const resData: UpdateCFProjectModel[] = await response.json();
-  return resData;
+  return response;
 }
 
 export async function investHttpRequest(

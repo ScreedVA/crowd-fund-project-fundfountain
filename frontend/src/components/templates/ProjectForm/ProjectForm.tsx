@@ -3,7 +3,7 @@ import {
   CreateCFProjectModel,
   FundingModel,
   ProjectStatus,
-  ReadCFProjectModel as ReadCFProjectRequest,
+  ReadCFProjectModel,
   UpdateCFProjectModel,
 } from "../../../models/ProjectModel";
 import ProjectDetails from "../ProjectOverview/pages/ProjectDetails";
@@ -14,7 +14,10 @@ import {
   updateCFProjectHttpRequest,
 } from "../../../services/ProjectService";
 import { isLocationField } from "../../../services/CommonService";
-import { validateCreateCFProjectModel } from "../../../services/ValidationService";
+import {
+  validateCreateCFProjectModel,
+  validateUpdateCFProjectModel,
+} from "../../../services/ValidationService";
 import useToast from "../../../services/ToasterService";
 import Toaster from "../Toaster/Toaster";
 
@@ -24,13 +27,13 @@ interface ProjectFormProps {
 
 const ProjectForm: React.FC<ProjectFormProps> = ({ projectId }) => {
   const [currentProjectDetails, setCurrentProjectDetails] =
-    useState<ReadCFProjectRequest>();
+    useState<ReadCFProjectModel>();
   const [errors, setErrors] = useState<any>({});
   const { toast, showToast, hideToast } = useToast();
 
   useEffect(() => {
     async function setProjectById() {
-      const resData: ReadCFProjectRequest = await fetchProjectByIdHttpRequest(
+      const resData: ReadCFProjectModel = await fetchProjectByIdHttpRequest(
         projectId!
       );
       setCurrentProjectDetails(resData);
@@ -51,8 +54,9 @@ const ProjectForm: React.FC<ProjectFormProps> = ({ projectId }) => {
 
   function handleCurrentDetailsChanged(event: any) {
     const { name, value, type } = event.target;
+
     setCurrentProjectDetails((prevFields) => {
-      const updatedFields = prevFields ?? ({} as ReadCFProjectRequest);
+      const updatedFields = prevFields ?? ({} as ReadCFProjectModel);
 
       let parsedValue: any;
       if (name === "status") {
@@ -78,7 +82,6 @@ const ProjectForm: React.FC<ProjectFormProps> = ({ projectId }) => {
         [name]: parsedValue,
       };
     });
-    console.log(currentProjectDetails);
   }
 
   async function handleConfirmSaveBtnClick(event: any) {
@@ -91,19 +94,37 @@ const ProjectForm: React.FC<ProjectFormProps> = ({ projectId }) => {
           description: currentProjectDetails.description,
           location: currentProjectDetails.location,
         };
-        await updateCFProjectHttpRequest(projectId, requestBody);
+
+        const validationErrors = validateUpdateCFProjectModel(requestBody);
+        setErrors(validationErrors);
+        if (Object.keys(validationErrors).length === 0) {
+          const response = await updateCFProjectHttpRequest(
+            projectId,
+            requestBody
+          );
+          if (response.ok) {
+            showToast("Project has been updated", "success");
+          } else {
+            showToast(
+              `Error Status: ${response.status} Error: ${response.text}`
+            );
+          }
+        }
       } else {
         const validationErrors = validateCreateCFProjectModel(
           currentProjectDetails
         );
         setErrors(validationErrors);
         if (Object.keys(validationErrors).length === 0) {
-          console.log(validationErrors);
           const response = await createCFProjectHttpRequest(
             currentProjectDetails as CreateCFProjectModel
           );
           if (response.ok) {
             showToast("New project created", "success");
+          } else {
+            showToast(
+              `Error Status: ${response.status} Error: ${response.text}`
+            );
           }
         }
       }
@@ -314,7 +335,7 @@ const ProjectForm: React.FC<ProjectFormProps> = ({ projectId }) => {
             message={toast.message}
             type={toast.type}
             onClose={hideToast}
-          ></Toaster>
+          />
         )}
       </div>
     </>

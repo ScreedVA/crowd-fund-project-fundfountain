@@ -16,7 +16,6 @@ interface UserBaseModel {
   firstName: string;
   lastName: string;
   dateOfBirth: string;
-  isAdmin: boolean;
 }
 
 export interface CreateUserModel extends UserBaseModel {
@@ -26,6 +25,7 @@ export interface CreateUserModel extends UserBaseModel {
 
 export interface ReadUserModel extends UserBaseModel {
   id: number;
+  isAdmin: boolean;
   back_account_balance?: number;
   location?: ReadLocationRequest;
 }

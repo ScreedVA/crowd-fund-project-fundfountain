@@ -59,14 +59,13 @@ export async function handle401Exception(
     let response: Response = await fetch(retryEndpoint, options);
     return response;
   } else {
-    console.log("Failed to refresh token. Redirect to login");
     return null;
   }
 }
 
 export async function RegisterForToken(
   createUserRequest: CreateUserModel
-): Promise<tokenModel> {
+): Promise<Response> {
   const response = await fetch(`${API_BASE_URL}/register`, {
     method: "POST",
     headers: {
@@ -80,8 +79,7 @@ export async function RegisterForToken(
     throw new Error(errorData || "Registration failed");
   }
 
-  const resData: tokenModel = await response.json();
-  return resData;
+  return response;
 }
 
 export async function LoginForToken(
