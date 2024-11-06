@@ -162,6 +162,5 @@ export async function investHttpRequest(
     }
   }
 
-  const resData: any = await response.json();
-  return resData;
+  return response;
 }

@@ -73,7 +73,10 @@ const ProjectDetails: React.FC<ProjectDetailsProps> = ({
     };
 
     async function sendInvestRequest() {
-      await investHttpRequest(investRequestBody, projectDetails!.id);
+      const response = await investHttpRequest(
+        investRequestBody,
+        projectDetails!.id
+      );
 
       setReload((prev) => !prev);
       handleCloseModal();

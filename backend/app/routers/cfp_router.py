@@ -90,7 +90,6 @@ async def create_project(db: db_dependency, user: user_dependency,  request: Cre
         db.commit()
 
 
-
 @router.put("/{project_id}", status_code=status.HTTP_201_CREATED)
 async def update_project(request: UpdateCFProject, project_id: int,user: user_dependency, db: db_dependency):
     if not user:

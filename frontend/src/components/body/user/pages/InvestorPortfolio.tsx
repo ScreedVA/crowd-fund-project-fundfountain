@@ -1,7 +1,11 @@
 import "./InvestorPortfolio.css";
 
 function InvestorPortfolio() {
-  return <></>;
+  return <>
+  <div className="invester-container">
+    
+  </div>
+  </>;
 }
 
 export default InvestorPortfolio;
