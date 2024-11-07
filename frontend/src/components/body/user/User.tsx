@@ -3,7 +3,7 @@ import "./User.css";
 import UserMenuBar from "./pages/UserMenuBar";
 import UserForm from "./pages/UserForm";
 import ProjectUserDashboard from "./pages/ProjectUserDashboard";
-import InvestorPortfolio from "./pages/InvestorPortfolio";
+import InvestorPortfolio from "./pages/InvestorPortfolio/InvestorPortfolio";
 import ProjectForm from "../../templates/ProjectForm/ProjectForm";
 
 function User() {

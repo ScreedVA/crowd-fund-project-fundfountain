@@ -2,7 +2,6 @@ import {
   CFProjectSummary,
   CreateCFProjectModel,
   UpdateCFProjectModel,
-  InvestRequestModel,
   ReadCFProjectModel,
 } from "../models/ProjectModel";
 import { handle401Exception } from "./AuthService";
@@ -25,12 +24,14 @@ export async function fetchAllProjects() {
         response = await handle401Exception(`${API_BASE_URL}`, "GET");
       } else {
         console.error(`Error: (${response.status} ${response.statusText})`);
+        return;
       }
     }
     const resData: CFProjectSummary[] = await response.json();
     return resData;
   } catch (error) {
     console.error("Fetch error: ", error);
+    return;
   }
 }
 
@@ -127,35 +128,6 @@ export async function updateCFProjectHttpRequest(
         `${API_BASE_URL}/${projectId}`,
         "PUT",
         requestBody
-      );
-    } else {
-      console.error(`Error: (${response.status} ${response.statusText})`);
-    }
-  }
-
-  return response;
-}
-
-export async function investHttpRequest(
-  investRequest: InvestRequestModel,
-  projectId: number
-) {
-  let accessToken = getAccessToken();
-  let response: Response = await fetch(`${API_BASE_URL}/invest/${projectId}`, {
-    method: "PUT",
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(investRequest),
-  });
-
-  if (!response.ok) {
-    if (response.status == 401) {
-      response = await handle401Exception(
-        `${API_BASE_URL}/invest/${projectId}`,
-        "PUT",
-        investRequest
       );
     } else {
       console.error(`Error: (${response.status} ${response.statusText})`);

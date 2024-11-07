@@ -9,7 +9,7 @@ class UserLocation(Base):
     user_id = Column(Integer, ForeignKey("user.id"), primary_key=True)
     location_id = Column(Integer, ForeignKey("location.id"), primary_key=True)
 
-    user = relationship("User", back_populates="bridgeLocations")
+    user = relationship("UserTable", back_populates="bridgeLocations")
     location = relationship("Location", back_populates="bridgeUsers")
 
 
@@ -20,7 +20,7 @@ class CrowdFundProjectLocation(Base):
     location_id = Column(Integer, ForeignKey("location.id"), primary_key=True)
 
 
-    crowd_fund_project = relationship("CrowdFundProject", back_populates="bridge_locations")
+    crowd_fund_project = relationship("CrowdFundProjectTable", back_populates="bridge_locations")
     location = relationship("Location", back_populates="bridgeCrowdFundProjects")
 
 # Bridge table for CrowdFundProject - User
@@ -30,10 +30,10 @@ class Investment(TimeStampModel):
     crowd_fund_project_id = Column(Integer, ForeignKey('crowd_fund_project.id'))
     investor_id = Column(Integer, ForeignKey('user.id'))
     unit_count = Column(Integer) # fixed pricing model
-    share_percentage = Column(Numeric(precision=3, scale=2)) # micro-investment model
+    share_percentage = Column(Numeric(precision=3, scale=2), nullable=False) # micro-investment model
     status = Column(SQLAlchemyEnum(InvestmentStatus), default=InvestmentStatus.PAID)
 
 
-    crowd_fund_project = relationship("CrowdFundProject", back_populates="bridge_investments")
-    investor = relationship("User", back_populates="bridge_investments")
+    crowd_fund_project = relationship("CrowdFundProjectTable", back_populates="bridge_investments")
+    investor = relationship("UserTable", back_populates="bridge_investments")
 

@@ -1,8 +1,8 @@
-from models import User
+from models import UserTable
 from schemas import ReadUserRequest, ReadUserSummary
 from datetime import datetime
 
-def transform_to_user_summary_schema_from_model(user: User) -> ReadUserSummary:
+def transform_to_user_summary_schema_from_model(user: UserTable) -> ReadUserSummary:
 
     read_user_sum_request = ReadUserSummary(
 
@@ -13,7 +13,7 @@ def transform_to_user_summary_schema_from_model(user: User) -> ReadUserSummary:
 
     return read_user_sum_request
 
-def transform_to_read_user_schema_from_model(user: User) -> ReadUserRequest:
+def transform_to_read_user_schema_from_model(user: UserTable) -> ReadUserRequest:
 
     read_user_request = ReadUserRequest(
         id=user.id,

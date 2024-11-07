@@ -42,7 +42,4 @@ class CreateCFProject(CrowdFundProjectBaseModel):
 class UpdateCFProject(CrowdFundProjectBaseModel):
     location: Optional[ReadLocationRequest] = Field(None)
 
-class InvestRequest(BaseModel):
-    amount: Optional[int] = Field(None)
-    unit_count: Optional[int] = Field(None, alias="unitCount")
 

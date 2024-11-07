@@ -7,23 +7,45 @@ import {
   LoginForToken,
 } from "../../../../../services/AuthService";
 import { tokenModel } from "../../../../../models/UserModel";
+import { LoginFormModel } from "../../../../../models/ProjectModel";
+import { validateLoginFormModel } from "../../../../../services/ValidationService";
 
 function LoginForm() {
   const navigate = useNavigate();
+  const [loginDetails, setLoginDetails] = useState<LoginFormModel>();
   const [password, setPassword] = useState("");
   const [username, setUsername] = useState("");
+  const [errors, setErrors] = useState<any>();
   const { login } = useContext(AuthContext);
+
+  function handleFormDetailsChanged(event: any) {
+    event.preventDefault();
+
+    const { name, value } = event.target;
+    setLoginDetails((prevValues: any) => {
+      return {
+        ...prevValues,
+        [name]: value,
+      };
+    });
+  }
 
   async function handleFormSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    const formData = new URLSearchParams();
-    formData.append("username", username);
-    formData.append("password", password);
+    const validationErrors = validateLoginFormModel(loginDetails!);
+    setErrors(validationErrors);
+    if (loginDetails) {
+      if (Object.keys(validationErrors).length === 0) {
+        const formData = new URLSearchParams();
+        formData.append("username", loginDetails.username);
+        formData.append("password", loginDetails.password);
 
-    const tokenResponse: tokenModel = await LoginForToken(formData);
-    login(tokenResponse["access_token"], tokenResponse["refresh_token"]);
-    navigate("/user");
+        const tokenResponse: tokenModel = await LoginForToken(formData);
+        login(tokenResponse["access_token"], tokenResponse["refresh_token"]);
+        navigate("/user");
+      }
+    }
   }
 
   return (
@@ -38,17 +60,25 @@ function LoginForm() {
               <input
                 type="text"
                 placeholder="Username"
-                onChange={(e) => setUsername(e.target.value)}
-                required
+                name="username"
+                onChange={handleFormDetailsChanged}
+                value={loginDetails?.username || ""}
               />
+              {errors?.username && (
+                <small style={{ color: "red" }}>{errors.username}</small>
+              )}
             </div>
             <div className="input-field log">
               <input
                 type="password"
                 placeholder="Password"
-                onChange={(e) => setPassword(e.target.value)}
-                required
+                name="password"
+                onChange={handleFormDetailsChanged}
+                value={loginDetails?.password || ""}
               />
+              {errors?.password && (
+                <small style={{ color: "red" }}>{errors.password}</small>
+              )}
             </div>
             <button className="login-button" type="submit">
               Login

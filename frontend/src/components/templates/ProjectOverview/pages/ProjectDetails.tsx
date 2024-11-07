@@ -4,13 +4,15 @@ import {
   InvestRequestModel,
   ReadCFProjectModel,
 } from "../../../../models/ProjectModel";
-import {
-  fetchProjectByIdHttpRequest,
-  investHttpRequest,
-} from "../../../../services/ProjectService";
+import { fetchProjectByIdHttpRequest } from "../../../../services/ProjectService";
 import { FundingModel } from "../../../../models/ProjectModel";
 import ProgressBar from "../../ProgressBar/ProgressBar";
 import { useNavigate } from "react-router-dom";
+import {
+  validateFixedPriceInput,
+  validateMicroInvestmentInput,
+} from "../../../../services/ValidationService";
+import { investHttpRequest } from "../../../../services/InvestorService";
 interface ProjectDetailsProps {
   projectId: number;
   isUserPath: boolean;
@@ -21,11 +23,13 @@ const ProjectDetails: React.FC<ProjectDetailsProps> = ({
   isUserPath,
 }) => {
   const [projectDetails, setProjectDetails] = useState<ReadCFProjectModel>();
+  const [investRequest, setInvestRequest] = useState<InvestRequestModel>({
+    microInvestmentAmount: 0,
+    unitsToInvest: 0,
+  });
   const [isModalOpen, setModalOpen] = useState(false);
-  const [unitsToInvest, setUnitsToInvest] = useState(0);
-  const [microInvestAmount, setMicroInvestAmount] = useState(0);
-
   const [reload, setReload] = useState(false);
+  const [errors, setErrors] = useState<any>();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -50,40 +54,50 @@ const ProjectDetails: React.FC<ProjectDetailsProps> = ({
     setModalOpen(false);
   };
 
+  const handleInvestRequestChanged = (event: any) => {
+    event.preventDefault();
+
+    const { name, value } = event.target;
+
+    setInvestRequest((prevValues) => {
+      return {
+        ...prevValues,
+        [name]: Number(value),
+      };
+    });
+    console.log(`name: ${name} value: ${value}`);
+  };
+
   const handleInvestConfirmClick = (event: any) => {
     event.preventDefault();
 
-    if (projectDetails?.fundingModel == FundingModel.FIXED_PRICE) {
-      if (unitsToInvest > projectDetails!.totalUnits) {
-        alert(
-          `Units to invest ${unitsToInvest} exceed total units: ${projectDetails?.totalUnits}`
+    const validationErrors =
+      projectDetails?.fundingModel === FundingModel.FIXED_PRICE
+        ? validateFixedPriceInput(
+            investRequest?.unitsToInvest!,
+            projectDetails.totalUnits
+          )
+        : validateMicroInvestmentInput(
+            investRequest?.microInvestmentAmount!,
+            projectDetails!.currentFund,
+            projectDetails!.fundGoal
+          );
+
+    setErrors(validationErrors);
+    if (Object.keys(validationErrors).length === 0) {
+      async function sendInvestRequest() {
+        const response = await investHttpRequest(
+          investRequest!,
+          projectDetails!.id
         );
-        return;
+
+        setReload((prev) => !prev);
+        handleCloseModal();
+        setInvestRequest({});
       }
-    } else if (projectDetails?.fundingModel == FundingModel.MICRO_INVESTMENT) {
-      if (microInvestAmount < 1000) {
-        alert(`Invest Amount: ${microInvestAmount} must be atleast 1000`);
-        return;
-      }
+      sendInvestRequest();
+      console.log(validationErrors);
     }
-
-    const investRequestBody: InvestRequestModel = {
-      amount: microInvestAmount,
-      unitCount: unitsToInvest,
-    };
-
-    async function sendInvestRequest() {
-      const response = await investHttpRequest(
-        investRequestBody,
-        projectDetails!.id
-      );
-
-      setReload((prev) => !prev);
-      handleCloseModal();
-      setUnitsToInvest(0);
-      setMicroInvestAmount(0);
-    }
-    sendInvestRequest();
   };
 
   const isfundingProgressValid = () => {
@@ -159,15 +173,22 @@ const ProjectDetails: React.FC<ProjectDetailsProps> = ({
             {projectDetails?.fundingModel == FundingModel.FIXED_PRICE ? (
               <form className="modal-form">
                 <h2>Fixed Price Investment</h2>
-                <h3>Price: ${unitsToInvest * projectDetails.unitPrice}</h3>
+                <h3>
+                  Price: $
+                  {investRequest?.unitsToInvest! * projectDetails.unitPrice ||
+                    0}
+                </h3>
                 <input
                   type="number"
                   name="unitsToInvest"
                   className="modal-input"
-                  onChange={(e) => setUnitsToInvest(Number(e.target.value))}
+                  onChange={handleInvestRequestChanged}
                   placeholder={`/ ${projectDetails?.totalUnits} Total Units`}
-                  required
+                  value={investRequest?.unitsToInvest || ""}
                 />
+                {errors?.unitsToInvest && (
+                  <small style={{ color: "red" }}>{errors.unitsToInvest}</small>
+                )}
                 <button
                   type="submit"
                   className="modal-confirm-btn"
@@ -181,12 +202,17 @@ const ProjectDetails: React.FC<ProjectDetailsProps> = ({
                 <h2>Micro Investments</h2>
                 <input
                   type="number"
-                  name="investAmount"
+                  name="microInvestmentAmount"
                   className="modal-input"
-                  onChange={(e) => setMicroInvestAmount(Number(e.target.value))}
+                  onChange={handleInvestRequestChanged}
                   placeholder="Minimum Amount: $1000"
-                  required
+                  value={investRequest?.microInvestmentAmount || ""}
                 />
+                {errors?.microInvestmentAmount && (
+                  <small style={{ color: "red" }}>
+                    {errors.microInvestmentAmount}
+                  </small>
+                )}
                 <button type="submit" className="modal-confirm-btn">
                   Confirm Payment
                 </button>

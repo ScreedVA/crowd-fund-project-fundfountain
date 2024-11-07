@@ -49,7 +49,12 @@ export interface UpdateCFProjectModel extends CFProjectBaseModel {
   location?: ReadLocationRequest;
 }
 
+export interface LoginFormModel {
+  username: string;
+  password: string;
+}
+
 export interface InvestRequestModel {
-  amount: number;
-  unitCount: number;
+  microInvestmentAmount?: number;
+  unitsToInvest?: number;
 }

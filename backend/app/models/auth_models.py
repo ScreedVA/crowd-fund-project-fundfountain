@@ -9,4 +9,4 @@ class RefreshToken(BaseEntity):
     user_id = Column(Integer, ForeignKey('user.id'))
     expires_at = Column(DateTime, nullable=False)
 
-    user = relationship('User', back_populates='refresh_token')
+    user = relationship('UserTable', back_populates='refresh_token')

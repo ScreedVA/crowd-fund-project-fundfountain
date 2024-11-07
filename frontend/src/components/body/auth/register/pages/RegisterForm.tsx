@@ -50,10 +50,9 @@ function RegisterForm() {
       }));
     }
 
+    const validationErrors = validateCreateUserModel(registerDetails!);
+    setErrors(validationErrors);
     if (registerDetails) {
-      const validationErrors = validateCreateUserModel(registerDetails);
-      setErrors(validationErrors);
-
       if (Object.keys(validationErrors).length === 0) {
         const response = await RegisterForToken(registerDetails);
         const tokenResponse: tokenModel = await response.json();

@@ -1,6 +1,7 @@
 import { ObjectUtils } from "primeng/utils";
 import {
   CreateCFProjectModel,
+  LoginFormModel,
   UpdateCFProjectModel,
 } from "../models/ProjectModel";
 import { CreateUserModel, UpdateUserModel } from "../models/UserModel";
@@ -58,26 +59,27 @@ export function validateUpdateCFProjectModel(
 export function validateCreateUserModel(formDataModel: CreateUserModel) {
   const errors: any = {};
 
-  if (!formDataModel.username) errors.username = "Username is required";
-  else if (formDataModel.username.length < 3) {
+  if (!formDataModel?.username) errors.username = "Username is required";
+  else if (formDataModel?.username.length < 3) {
     errors.username = "Username must be atleast 3 characters";
   }
 
-  if (!formDataModel.email) errors.email = "Email is required";
+  if (!formDataModel?.email) errors.email = "Email is required";
 
-  if (!formDataModel.firstName) errors.firstName = "First name is required";
-  else if (formDataModel.firstName.length < 3) {
+  if (!formDataModel?.firstName) errors.firstName = "First name is required";
+  else if (formDataModel?.firstName.length < 3) {
     errors.firstName = "First name must be atleast 3 characters";
   }
 
-  if (!formDataModel.lastName) errors.lastName = "Last name is required";
-  else if (formDataModel.lastName.length < 3) {
+  if (!formDataModel?.lastName) errors.lastName = "Last name is required";
+  else if (formDataModel?.lastName.length < 3) {
     errors.lastName = "Last name must be atleast 3 characters";
   }
 
-  if (!formDataModel.dateOfBirth) errors.dateOfBirth = "Date of birth required";
+  if (!formDataModel?.dateOfBirth)
+    errors.dateOfBirth = "Date of birth required";
 
-  if (!formDataModel.password) errors.password = "Password is required";
+  if (!formDataModel?.password) errors.password = "Password is required";
 
   return errors;
 }
@@ -100,6 +102,56 @@ export function validateUpdateUserModel(formDataModel: UpdateUserModel) {
     errors.lastName = "Last name must be atleast 3 characters";
   }
   if (!formDataModel.dateOfBirth) errors.dateOfBirth = "Date of birth required";
+
+  return errors;
+}
+
+export function validateLoginFormModel(formDataModel: LoginFormModel) {
+  const errors: any = {};
+
+  if (!formDataModel?.username) errors.username = "Username is required";
+  else if (formDataModel?.username.length < 3) {
+    errors.username = "Username must be atleast 3 characters";
+  }
+
+  if (!formDataModel?.password) errors.password = "Password is required";
+
+  return errors;
+}
+
+export function validateFixedPriceInput(
+  unitsToInvest: number,
+  totalUnits: number
+) {
+  const errors: any = {};
+
+  if (!unitsToInvest) errors.unitsToInvest = "Units to Invest is required";
+  else if (unitsToInvest <= 0)
+    errors.unitsToInvest = "Units to Invest must exceed 0 units";
+  else if (unitsToInvest > totalUnits)
+    errors.unitsToInvest = "Units to Invest must not exceed total units";
+
+  return errors;
+}
+
+export function validateMicroInvestmentInput(
+  microInvestmentAmount: number,
+  currentFund: number,
+  fundGoal: number
+) {
+  const errors: any = {};
+
+  const remainingFunds: number = fundGoal - currentFund;
+
+  if (!microInvestmentAmount)
+    errors.microInvestmentAmount = "Investment amount is required";
+  else if (microInvestmentAmount <= 0)
+    errors.microInvestmentAmount = "Investment amount must exceed $0";
+  else if (microInvestmentAmount > remainingFunds)
+    errors.microInvestmentAmount =
+      "Investment amount exceeds current remaining Funds";
+  else if (microInvestmentAmount < 1000)
+    errors.microInvestmentAmount = "Investment amount must be atleast $1000";
 
   return errors;
 }

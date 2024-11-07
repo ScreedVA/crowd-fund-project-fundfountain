@@ -4,7 +4,7 @@ from sqlalchemy.orm import relationship
 from datetime import datetime
 from schemas.user_schemas import UpdateUserRequest
 
-class User(TimeStampModel):
+class UserTable(TimeStampModel):
     __tablename__ = "user"
 
     username = Column(String(100), unique=True, nullable=False)
@@ -19,7 +19,7 @@ class User(TimeStampModel):
 
     bridgeLocations = relationship("UserLocation", back_populates="user")
     refresh_token = relationship('RefreshToken', back_populates='user')
-    crowd_fund_projects = relationship('CrowdFundProject', back_populates='user')
+    crowd_fund_projects = relationship('CrowdFundProjectTable', back_populates='user')
     bridge_investments = relationship("Investment", back_populates="investor")
 
     def update_from_request(self, request: UpdateUserRequest):

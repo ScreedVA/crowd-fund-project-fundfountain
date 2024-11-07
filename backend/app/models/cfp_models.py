@@ -4,7 +4,7 @@ from sqlalchemy.orm import relationship
 from enums import FundingModel, ProjectStatus
 from schemas import UpdateCFProject
 
-class CrowdFundProject(TimeStampModel):
+class CrowdFundProjectTable(TimeStampModel):
     __tablename__ = 'crowd_fund_project'
 
     name = Column(String(100), nullable=False)
@@ -22,7 +22,7 @@ class CrowdFundProject(TimeStampModel):
 
     owner_id = Column(Integer, ForeignKey('user.id'))
 
-    user = relationship("User", back_populates="crowd_fund_projects")
+    user = relationship("UserTable", back_populates="crowd_fund_projects")
     bridge_locations = relationship("CrowdFundProjectLocation", back_populates="crowd_fund_project")
     bridge_investments = relationship("Investment", back_populates="crowd_fund_project")
     

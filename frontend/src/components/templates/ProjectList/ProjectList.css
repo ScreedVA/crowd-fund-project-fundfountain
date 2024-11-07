@@ -9,7 +9,6 @@
 
 .project-list-item-container {
   background-color: #2a4a6e;
-  width: 80%;
   margin-bottom: 12px;
   border-radius: 6px;
   padding: 16px 24px;
@@ -20,18 +19,18 @@
 }
 
 .project-list-item-container:hover {
-  transform: translateY(-2px); /* Slight lift on hover */
+  transform: translateY(-2px);
   cursor: pointer;
 }
 
 .project-list-item-container h1 {
   font-size: 1.5em;
   margin: 0;
-  color: #ffffff; /* White text for title */
+  color: #ffffff;
 }
 
 .project-list-item-container h3 {
   font-size: 1em;
   margin-top: 4px;
-  color: #cbd4e1; /* Lighter color for description */
+  color: #cbd4e1;
 }

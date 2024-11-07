@@ -8,7 +8,7 @@ from jose import jwt, JWTError
 from sqlalchemy.orm import Session
 from sessions import SessionLocal
 from schemas.user_schemas import CreateUserRequest, Token, RefreshTokenRequest
-from models import User, UserLocation, RefreshToken
+from models import UserTable, UserLocation, RefreshToken
 from services import transform_to_location_model_from_req
 
 
@@ -36,7 +36,7 @@ db_dependency = Annotated[Session, Depends(get_db)]
 
 
 def authenticate_user(username: str, password: str, db):
-    user: User = db.query(User).filter(User.username == username).first()
+    user: UserTable = db.query(UserTable).filter(UserTable.username == username).first()
     if not user or not bcrypt_context.verify(password, user.hashed_password):
         return False
     return user
@@ -76,7 +76,7 @@ def cleanup_expired_tokens(db: db_dependency):
 async def register_user_for_access_token(db: db_dependency,
                       create_user_request: CreateUserRequest):
     
-    create_user_model = User(
+    create_user_model = UserTable(
         email=create_user_request.email,
         username=create_user_request.username,
         first_name=create_user_request.first_name,

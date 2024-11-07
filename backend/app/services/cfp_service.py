@@ -1,10 +1,10 @@
 from fastapi import HTTPException
 from starlette import status
-from models import CrowdFundProject
+from models import CrowdFundProjectTable
 from schemas import CrowdFundProjectSummary, ReadCrowdFundProject, CreateCFProject, UpdateCFProject
 from datetime import datetime
 
-def transform_cfp_summary_from_model(model: CrowdFundProject) -> CrowdFundProjectSummary:
+def transform_cfp_summary_from_model(model: CrowdFundProjectTable) -> CrowdFundProjectSummary:
     schema: CrowdFundProjectSummary = CrowdFundProjectSummary(
         id=model.id,
         name=model.name,
@@ -13,7 +13,7 @@ def transform_cfp_summary_from_model(model: CrowdFundProject) -> CrowdFundProjec
     
     return schema
 
-def transform_to_cfp_details_schema_from_model(model: CrowdFundProject) -> ReadCrowdFundProject:
+def transform_to_cfp_details_schema_from_model(model: CrowdFundProjectTable) -> ReadCrowdFundProject:
 
     schema: ReadCrowdFundProject = ReadCrowdFundProject(
         id=model.id,
@@ -34,7 +34,7 @@ def transform_to_cfp_details_schema_from_model(model: CrowdFundProject) -> ReadC
 
 def transform_to_model_from_cfp_create_schema(request: CreateCFProject):
 
-    model: CrowdFundProject = CrowdFundProject(
+    model: CrowdFundProjectTable = CrowdFundProjectTable(
         name=request.name,
         description=request.description,
         fund_goal=request.fund_goal,

@@ -9,7 +9,6 @@
 .user-container > .user-left {
   grid-column: 1;
   grid-row: 1 / 7;
-  border: 1px solid black;
 }
 
 .user-container > .user-right {

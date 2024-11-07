@@ -6,9 +6,11 @@ import {
   updateCurrentUser,
 } from "../../../../services/UserService";
 import { isLocationField } from "../../../../services/CommonService";
+import { validateUpdateUserModel } from "../../../../services/ValidationService";
 
 function UserForm() {
   const [currentUser, setCurrentUser] = useState<ReadUserModel>();
+  const [errors, SetErrors] = useState<any>();
   useEffect(() => {
     async function setUser() {
       setCurrentUser(await getCurrentUser());
@@ -19,8 +21,13 @@ function UserForm() {
   async function handleFormSubmit(event: FormEvent) {
     event.preventDefault();
 
+    const validationErrors = validateUpdateUserModel(currentUser!);
+    SetErrors(validationErrors);
+
     if (currentUser) {
-      await updateCurrentUser(currentUser as UpdateUserModel, currentUser.id);
+      if (Object.keys(validationErrors).length === 0) {
+        await updateCurrentUser(currentUser as UpdateUserModel, currentUser.id);
+      }
     }
   }
 
@@ -59,6 +66,9 @@ function UserForm() {
                 value={currentUser?.username || ""}
                 onChange={handleUserDetailsChange}
               />
+              {errors?.username && (
+                <small style={{ color: "red" }}>{errors.username}</small>
+              )}
             </div>
             <div className="input-field-user">
               <label htmlFor="email">Email</label>
@@ -69,6 +79,9 @@ function UserForm() {
                 value={currentUser?.email || ""}
                 onChange={handleUserDetailsChange}
               />
+              {errors?.email && (
+                <small style={{ color: "red" }}>{errors.email}</small>
+              )}
             </div>
           </div>
           <div className="input-box-user three">
@@ -81,6 +94,9 @@ function UserForm() {
                 value={currentUser?.firstName || ""}
                 onChange={handleUserDetailsChange}
               />
+              {errors?.firstName && (
+                <small style={{ color: "red" }}>{errors.firstName}</small>
+              )}
             </div>
             <div className="input-field-user">
               <label htmlFor="lastName">Last Name</label>
@@ -91,6 +107,9 @@ function UserForm() {
                 value={currentUser?.lastName || ""}
                 onChange={handleUserDetailsChange}
               />
+              {errors?.lastName && (
+                <small style={{ color: "red" }}>{errors.lastName}</small>
+              )}
             </div>
             <div className="input-field-user">
               <label htmlFor="dateOfBirth">Date of Birth</label>
@@ -100,6 +119,9 @@ function UserForm() {
                 value={currentUser?.dateOfBirth || ""}
                 onChange={handleUserDetailsChange}
               />
+              {errors?.dateOfBirth && (
+                <small style={{ color: "red" }}>{errors.dateOfBirth}</small>
+              )}
             </div>
           </div>
 

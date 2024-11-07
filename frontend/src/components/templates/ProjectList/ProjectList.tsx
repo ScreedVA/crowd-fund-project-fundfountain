@@ -4,9 +4,13 @@ import "./ProjectList.css";
 import { useNavigate } from "react-router-dom";
 interface ProjectListProps {
   projectList: CFProjectSummary[];
+  customWidthpx?: string;
 }
 
-const ProjectList: React.FC<ProjectListProps> = ({ projectList }) => {
+const ProjectList: React.FC<ProjectListProps> = ({
+  projectList,
+  customWidthpx,
+}) => {
   const navigate = useNavigate();
 
   return (
@@ -16,6 +20,7 @@ const ProjectList: React.FC<ProjectListProps> = ({ projectList }) => {
           <li
             onClick={() => navigate(`./project/${value.id}`)}
             key={value.id}
+            style={{ width: customWidthpx ? customWidthpx : "80%" }}
             className="project-list-item-container"
           >
             <ProjectListItem
