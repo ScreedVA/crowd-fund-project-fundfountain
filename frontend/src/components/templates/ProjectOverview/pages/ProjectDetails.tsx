@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import "./ProjectDetails.css";
 import {
   InvestRequestModel,
+  ProjectStatus,
   ReadCFProjectModel,
 } from "../../../../models/ProjectModel";
 import { fetchProjectByIdHttpRequest } from "../../../../services/ProjectService";
@@ -114,7 +115,19 @@ const ProjectDetails: React.FC<ProjectDetailsProps> = ({
     <>
       <div className="project-details-container">
         <h1>{projectDetails?.name}</h1>
-        <h3 id="project-status">Status:{projectDetails?.status}</h3>
+        <h3 id="project-status">
+          Status:{" "}
+          <span
+            style={{
+              color:
+                projectDetails?.status == ProjectStatus.ACTIVE
+                  ? "#17DC21"
+                  : "#DB0117",
+            }}
+          >
+            {projectDetails?.status}
+          </span>
+        </h3>
         <p id="project-description">{projectDetails?.description}</p>
         {isfundingProgressValid() && (
           <ProgressBar

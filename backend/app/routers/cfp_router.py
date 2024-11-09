@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 from models import CrowdFundProjectTable, Investment, Location, CrowdFundProjectLocation
 from schemas import CrowdFundProjectSummary, ReadCrowdFundProject, InvestRequest, CreateCFProject, ReadLocationRequest, UpdateCFProject
 from enums import FundingModel, InvestmentStatus
-from services import transform_cfp_summary_from_model, transform_to_cfp_details_schema_from_model, validate_project_fields, transform_to_model_from_cfp_create_schema, transform_to_location_model_from_req, transform_to_location_read_schema_from_model
+from services import transform_to_cfp_summary_schema_from_model, transform_to_cfp_details_schema_from_model, validate_project_fields, transform_to_model_from_cfp_create_schema, transform_to_location_model_from_req, transform_to_location_read_schema_from_model
 from .auth_router import get_current_user
 from typing import Annotated
 from starlette import status
@@ -30,7 +30,7 @@ user_dependency = Annotated[dict, Depends(get_current_user)]
 async def read_all_projects(db: db_dependency):
     
     cfp_models: list[CrowdFundProjectTable] = db.query(CrowdFundProjectTable).all()
-    cfp_response = [transform_cfp_summary_from_model(model) for model in cfp_models]
+    cfp_response = [transform_to_cfp_summary_schema_from_model(model) for model in cfp_models]
 
     return cfp_response
 
@@ -40,7 +40,7 @@ async def read_all_projects(db: db_dependency, user: user_dependency):
     if not user:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Cannot retrieve projects from this user")
     cfp_models: list[CrowdFundProjectTable] = db.query(CrowdFundProjectTable).filter(CrowdFundProjectTable.owner_id == user["id"]).all()
-    cfp_response = [transform_cfp_summary_from_model(model) for model in cfp_models]
+    cfp_response = [transform_to_cfp_summary_schema_from_model(model) for model in cfp_models]
 
     return cfp_response
 

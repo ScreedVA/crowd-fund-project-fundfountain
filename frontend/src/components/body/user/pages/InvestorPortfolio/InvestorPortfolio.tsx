@@ -1,13 +1,29 @@
 import { useEffect, useState } from "react";
 import BarChart from "../../../../templates/Charts/BarChart/BarChart";
+import PieChart from "../../../../templates/Charts/PieChart/PieChart";
 import "./InvestorPortfolio.css";
-import { InvestorShareSummaryModel } from "../../../../../models/InvestorModel";
-import { fetchCurrentInvestorShareList } from "../../../../../services/InvestorService";
+import {
+  InvestorBalanceDistributionModel,
+  InvestorShareSummaryModel,
+} from "../../../../../models/InvestorModel";
+import {
+  fetchCurrentInvestorBalanceDistribution,
+  fetchCurrentInvestorShareList,
+} from "../../../../../services/InvestorService";
 import InvestorMenuBar from "./pages/InvestorMenuBar";
+import StackedLineChart from "../../../../templates/Charts/StackedLineChart/StackedLineChart";
 function InvestorPortfolio() {
-  const [chartData, setChartData] = useState<InvestorShareSummaryModel[]>();
+  const [chartData, setChartData] = useState<any>();
+  const [barchartData, setBarchartData] =
+    useState<InvestorShareSummaryModel[]>();
+  const [piechartData, setPiechartData] =
+    useState<InvestorBalanceDistributionModel[]>();
   const [selectedIndex, setSelectedIndex] = useState(0);
-  const selectOptions: string[] = ["Shares Owned", "Project Revenue History"];
+  const selectOptions: string[] = [
+    "Shares Owned",
+    "Investment Distribution",
+    "Project Revenue History",
+  ];
 
   function handleMenuItemChange(index: number) {
     setSelectedIndex(index);
@@ -15,24 +31,29 @@ function InvestorPortfolio() {
 
   useEffect(() => {
     // fetch Barchart Data
-    async function setBarchartData() {
+    async function initBarchartData() {
       const response: Response = await fetchCurrentInvestorShareList();
-      // if (response.status == 404) {
-      //   alert("No investment data found");
-      //   return;
-      // }
       const investorShareList: InvestorShareSummaryModel[] =
         await response.json();
-      setChartData(investorShareList);
+      setBarchartData(investorShareList);
     }
-    selectedIndex == 0 && setBarchartData();
+    async function initPiechartData() {
+      const resposne: Response =
+        await fetchCurrentInvestorBalanceDistribution();
+      const investorBalanceDistributionList: InvestorBalanceDistributionModel[] =
+        await resposne.json();
+      setPiechartData(investorBalanceDistributionList);
+    }
+
+    selectedIndex == 0 && initBarchartData();
+    selectedIndex == 1 && initPiechartData();
   }, [selectedIndex]);
 
   return (
     <>
       <div className="investor-container">
-        <div className="investor-top">
-          <div className="investor-top-left">
+        <div className="investor-wrapper">
+          <div className="investor-left">
             <div className="investor-menu-container">
               <InvestorMenuBar
                 selectOptions={selectOptions}
@@ -41,20 +62,32 @@ function InvestorPortfolio() {
               />
             </div>
             <div className="investor-chart-container">
-              {chartData && selectedIndex == 0 && (
+              {barchartData && selectedIndex == 0 && (
                 <BarChart
-                  xAxisData={chartData.map((value) => value.projectName)}
-                  yAxisData={chartData.map((value) => value.sharePercentage)}
+                  xAxisData={barchartData.map(
+                    (value: any) => value.projectName
+                  )}
+                  yAxisData={barchartData.map(
+                    (value: any) => value.sharePercentage
+                  )}
                 />
               )}
+              {piechartData && selectedIndex == 1 && (
+                <PieChart
+                  seriesData={piechartData.map(
+                    (invBalObject: InvestorBalanceDistributionModel) => ({
+                      value: invBalObject.totalInvestment,
+                      name: invBalObject.projectName,
+                    })
+                  )}
+                />
+              )}
+              {selectedIndex == 2 && <StackedLineChart />}
             </div>
           </div>
-          <div className="investor-top-right">
+          <div className="investor-right">
             <h2>Stacked Line Chart</h2>
           </div>
-        </div>
-        <div className="investor-bottom">
-          <h2>User List</h2>
         </div>
       </div>
     </>

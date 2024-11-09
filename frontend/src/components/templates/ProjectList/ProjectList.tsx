@@ -26,6 +26,7 @@ const ProjectList: React.FC<ProjectListProps> = ({
             <ProjectListItem
               name={value.name}
               description={value.description}
+              status={value.status}
             />
           </li>
         ))}

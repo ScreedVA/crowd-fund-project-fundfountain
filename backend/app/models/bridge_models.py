@@ -1,8 +1,9 @@
 from sessions import Base
-from sqlalchemy import Column, Integer, ForeignKey, Numeric, Enum as SQLAlchemyEnum
+from sqlalchemy import Column, Integer, ForeignKey, Numeric, Enum as SQLAlchemyEnum, Date
 from sqlalchemy.orm import relationship
 from .base_models import TimeStampModel
 from enums import InvestmentStatus
+from datetime import datetime
 class UserLocation(Base):
     __tablename__ = "user_location"
 
@@ -31,9 +32,22 @@ class Investment(TimeStampModel):
     investor_id = Column(Integer, ForeignKey('user.id'))
     unit_count = Column(Integer) # fixed pricing model
     share_percentage = Column(Numeric(precision=3, scale=2), nullable=False) # micro-investment model
+    transaction_amount = Column(Integer)
     status = Column(SQLAlchemyEnum(InvestmentStatus), default=InvestmentStatus.PAID)
 
 
     crowd_fund_project = relationship("CrowdFundProjectTable", back_populates="bridge_investments")
     investor = relationship("UserTable", back_populates="bridge_investments")
+
+class RevenueDistribution(TimeStampModel):
+    __tablename__ = 'revenue_distribution'
+
+    amount = Column(Integer, nullable=False)
+    distribution_date = Column(Date, nullable=False, default=datetime.today)
+
+    revenue_id = Column(Integer, ForeignKey('revenue.id'))
+    investor_id = Column(Integer, ForeignKey('user.id'))
+
+    revenue = relationship("RevenueTable", back_populates="bridge_revenue_distributions")
+    investor = relationship("UserTable", back_populates="bridge_revenue_distributions")
 

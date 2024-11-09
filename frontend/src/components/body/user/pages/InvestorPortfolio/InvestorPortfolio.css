@@ -1,41 +1,24 @@
 .investor-container {
-  display: grid;
-  grid-template-rows: 65% 35%;
   height: 88%;
 }
 
-/* Top 65% */
-.investor-top {
-  grid-row: 1;
-  display: grid;
-  grid-template-columns: 75% 25%;
-}
-
-.investor-top-left {
-  grid-column: 1;
+.investor-wrapper {
   height: 100%;
   display: grid;
-  grid-template-rows: 10% 90%;
+  grid-template-columns: 80% 20%;
 }
 
-.investor-menu-container {
+.investor-left {
+  grid-column: 1;
+  display: grid;
+  grid-template-rows: 15% 85%;
+}
+
+.investor-left > .investor-menu-container {
   grid-row: 1;
 }
 
-.investor-chart-container {
+.investor-left > .investor-chart-container {
+  height: 100%;
   grid-row: 2;
-}
-
-.investor-top-right {
-  grid-column: 2;
-}
-
-/* Bottom 35% */
-.investor-bottom {
-  grid-row: 2;
-  background-color: aqua;
-}
-
-.investor-container h2 {
-  text-align: center;
 }

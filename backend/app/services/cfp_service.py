@@ -4,11 +4,12 @@ from models import CrowdFundProjectTable
 from schemas import CrowdFundProjectSummary, ReadCrowdFundProject, CreateCFProject, UpdateCFProject
 from datetime import datetime
 
-def transform_cfp_summary_from_model(model: CrowdFundProjectTable) -> CrowdFundProjectSummary:
+def transform_to_cfp_summary_schema_from_model(model: CrowdFundProjectTable) -> CrowdFundProjectSummary:
     schema: CrowdFundProjectSummary = CrowdFundProjectSummary(
         id=model.id,
         name=model.name,
-        description=model.description
+        description=model.description,
+        status=model.status
     )
     
     return schema

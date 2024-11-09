@@ -1,10 +1,9 @@
 .menu-body {
-  /* border: 1px solid #1a202c; Dark gray-blue border */
   background-color: #1e3a5f; /* Dark blue */
   border-top: 1px solid white;
   padding-top: 3px;
   padding-bottom: 10px;
-  padding-left: 10px;
+  padding-left: 0px;
   margin: 0px;
   display: flex;
   justify-content: flex-start;
@@ -13,7 +12,6 @@
 }
 
 .menu-list {
-  /* border: 1px solid black; */
   display: flex;
   flex-direction: column;
   width: 100%;
@@ -30,14 +28,14 @@
 }
 
 .menu-item:active {
-  background-color: #008c9e; /* Darker cyan for the active state */
+  background-color: #008c9e;
 }
 
 .menu-item {
-  /* border: 1px solid black; */
   background-color: #4a5568;
   color: #ffffff;
-  margin: 5px 0;
+  margin: 0px;
+  margin-bottom: 5px;
   width: 100%;
   height: 40px;
   display: flex;

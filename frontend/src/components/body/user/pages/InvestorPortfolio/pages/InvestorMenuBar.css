@@ -1,7 +1,6 @@
 .investor-menu-body {
   margin: 0px;
   padding: 0px;
-  margin-bottom: 50px;
   box-sizing: border-box;
 }
 
@@ -42,6 +41,6 @@
   border-left: 0;
 }
 
-.investor-menu-item.item-1 {
+.investor-menu-item.item-2 {
   border-right: 2px solid black;
 }

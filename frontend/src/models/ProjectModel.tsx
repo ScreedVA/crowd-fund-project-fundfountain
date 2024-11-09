@@ -3,8 +3,7 @@ import { ReadLocationRequest } from "./LocationModel";
 export enum ProjectStatus {
   PENDING_APPROVAL = "Pending Approval",
   ACTIVE = "Active",
-  FUNDING = "Funding",
-  COMPLETE = "Complete",
+  FUNDED = "Funded",
 }
 
 export enum FundingModel {
@@ -19,6 +18,7 @@ interface CFProjectBaseModel {
 
 export interface CFProjectSummary extends CFProjectBaseModel {
   id?: number;
+  status: ProjectStatus;
 }
 
 export interface ReadCFProjectModel extends CFProjectBaseModel {

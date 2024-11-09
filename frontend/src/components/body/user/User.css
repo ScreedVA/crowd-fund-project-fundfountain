@@ -14,8 +14,9 @@
 .user-container > .user-right {
   grid-column: 2 / 7;
   grid-row: 1 / 7;
-  border: 1px solid white;
   background-color: #1e3a5f;
+  max-height: 100%;
+  border-left: 1px solid white;
 }
 
 .user-right > h1 {

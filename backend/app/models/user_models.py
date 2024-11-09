@@ -15,12 +15,14 @@ class UserTable(TimeStampModel):
     is_active = Column(Boolean, default=True)
     is_admin = Column(Boolean, default=False)
     date_of_birth = Column(Date, nullable=False)
-    bank_account_balance = Column(Integer)
+    bank_account_balance = Column(Integer, default=0)
+    balance_spent = Column(Integer, default=0)
 
     bridgeLocations = relationship("UserLocation", back_populates="user")
     refresh_token = relationship('RefreshToken', back_populates='user')
     crowd_fund_projects = relationship('CrowdFundProjectTable', back_populates='user')
     bridge_investments = relationship("Investment", back_populates="investor")
+    bridge_revenue_distributions = relationship("RevenueDistribution", back_populates="investor")
 
     def update_from_request(self, request: UpdateUserRequest):
         self.username = request.username
@@ -32,3 +34,7 @@ class UserTable(TimeStampModel):
 
     def deposite_balance(self, amount: int):
         self.bank_account_balance += amount
+
+    def withdraw_balance(self, amount: int):
+        self.bank_account_balance -= amount
+        self.balance_spent += amount

@@ -7,7 +7,7 @@ const API_BASE_URL: string = `${API_BASE_DOMAIN}/investor`;
 
 export async function fetchCurrentInvestorShareList(): Promise<Response> {
   let accessToken = getAccessToken();
-  let response: Response = await fetch(`${API_BASE_URL}/shareList`, {
+  let response: Response = await fetch(`${API_BASE_URL}/current/shareList`, {
     method: "GET",
     headers: {
       Authorization: `Bearer ${accessToken}`,
@@ -16,7 +16,35 @@ export async function fetchCurrentInvestorShareList(): Promise<Response> {
 
   if (!response.ok) {
     if (response.status == 401) {
-      response = await handle401Exception(`${API_BASE_URL}`, "GET");
+      response = await handle401Exception(
+        `${API_BASE_URL}/current/shareList`,
+        "GET"
+      );
+    } else {
+      console.error(`Error: (${response.status} ${response.statusText})`);
+    }
+  }
+
+  return response;
+}
+export async function fetchCurrentInvestorBalanceDistribution(): Promise<Response> {
+  let accessToken = getAccessToken();
+  let response: Response = await fetch(
+    `${API_BASE_URL}/current/balanceDistribution`,
+    {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    }
+  );
+
+  if (!response.ok) {
+    if (response.status == 401) {
+      response = await handle401Exception(
+        `${API_BASE_URL}/current/balanceDistribution`,
+        "GET"
+      );
     } else {
       console.error(`Error: (${response.status} ${response.statusText})`);
     }

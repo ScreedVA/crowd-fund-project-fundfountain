@@ -10,12 +10,18 @@ function StackedLineChart() {
 
     const options = {
       title: {
-        text: "Stacked Line",
+        text: "Project Revenue History",
+        textStyle: {
+          color: "#FFFFFF",
+        },
       },
       tooltip: {
         trigger: "axis",
       },
       legend: {
+        textStyle: {
+          color: "#FFFFFF",
+        },
         data: ["Email", "Union Ads", "Video Ads", "Direct", "Search Engine"],
       },
       grid: {
@@ -32,10 +38,16 @@ function StackedLineChart() {
       xAxis: {
         type: "category",
         boundaryGap: false,
+        axisLabel: {
+          color: "#FFFFFF",
+        },
         data: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
       },
       yAxis: {
         type: "value",
+        axisLabel: {
+          color: "#FFFFFF",
+        },
       },
       series: [
         {
@@ -72,8 +84,28 @@ function StackedLineChart() {
     };
 
     charInstance.setOption(options);
+    const resizeChart = () => {
+      charInstance.resize();
+    };
+
+    window.addEventListener("resize", resizeChart);
+
+    return () => {
+      window.removeEventListener("resize", resizeChart);
+      charInstance.dispose();
+    };
   }, []);
-  return <></>;
+  return (
+    <>
+      <div className="stackedlinechart-container">
+        <div
+          ref={charRef} // Attach ref to div where ECharts will render
+          className="stackedlinechart-body"
+          style={{ width: "100%", height: "100%" }}
+        />
+      </div>
+    </>
+  );
 }
 
 export default StackedLineChart;

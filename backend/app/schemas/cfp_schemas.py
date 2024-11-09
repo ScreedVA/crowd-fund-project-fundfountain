@@ -7,7 +7,8 @@ from .location_schemas import ReadLocationRequest
 class CrowdFundProjectSummary(BaseModel):
     id : int
     name: str = Field(min_length=3)
-    description: str =Field(min_length=3)
+    description: str = Field(min_length=3)
+    status: ProjectStatus
 
 class CrowdFundProjectBaseModel(BaseModel):
     name: str = Field(min_length=3)

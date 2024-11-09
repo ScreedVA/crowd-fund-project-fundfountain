@@ -1,9 +1,9 @@
 from .base_models import TimeStampModel
 from sqlalchemy import Column, Integer, Date, String, Text, Numeric, ForeignKey,Enum as SQLALchemyEnum
 from sqlalchemy.orm import relationship
-from enums import FundingModel, ProjectStatus
+from enums import FundingModel, ProjectStatus, RevenueType, RevenueStatus
 from schemas import UpdateCFProject
-
+from datetime import datetime
 class CrowdFundProjectTable(TimeStampModel):
     __tablename__ = 'crowd_fund_project'
 
@@ -25,7 +25,7 @@ class CrowdFundProjectTable(TimeStampModel):
     user = relationship("UserTable", back_populates="crowd_fund_projects")
     bridge_locations = relationship("CrowdFundProjectLocation", back_populates="crowd_fund_project")
     bridge_investments = relationship("Investment", back_populates="crowd_fund_project")
-    
+    revenue_list = relationship('RevenueTable', back_populates='crowd_fund_project')
 
     # Fire if factors (fund_goal/unit_price) change
     def update_valuation(self):
@@ -68,6 +68,19 @@ class CrowdFundProjectTable(TimeStampModel):
         self.name = request.name
         self.description = request.description
 
+class RevenueTable(TimeStampModel):
+
+    __tablename__ = "revenue"
+
+    amount = Column(Integer, default=0)
+    distribution_date = Column(Date, nullable=False, default=datetime.today)
+    revenue_type = Column(SQLALchemyEnum(RevenueType), nullable=False)
+    revenue_status = Column(SQLALchemyEnum(RevenueStatus), nullable=False)
+
+    crowd_fund_project_id = Column(Integer, ForeignKey('crowd_fund_project.id'))
+
+    crowd_fund_project = relationship("CrowdFundProjectTable", back_populates="revenue_list")
+    bridge_revenue_distributions = relationship("RevenueDistribution", back_populates="revenue")
 
 
 
