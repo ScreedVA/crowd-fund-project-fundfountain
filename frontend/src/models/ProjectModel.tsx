@@ -60,3 +60,9 @@ export interface InvestRequestModel {
   microInvestmentAmount?: number;
   unitsToInvest?: number;
 }
+
+export interface cfpFilterModel {
+  name: string;
+  status: ProjectStatus;
+  fundingModel: FundingModel;
+}

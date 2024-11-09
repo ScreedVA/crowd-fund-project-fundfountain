@@ -1,6 +1,20 @@
+import { useState } from "react";
+import {
+  cfpFilterModel,
+  FundingModel,
+  ProjectStatus,
+} from "../../../../models/ProjectModel";
 import "./HomeHeader.css";
 
-function HomeHeader() {
+interface HomeHeaderProps {
+  updateFilter: (event: any) => void;
+}
+
+const HomeHeader: React.FC<HomeHeaderProps> = ({ updateFilter }) => {
+  function handleFilterChanged(event: any) {
+    updateFilter(event);
+  }
+
   return (
     <>
       <div className="home-header-container">
@@ -9,23 +23,49 @@ function HomeHeader() {
           <form className="home-header-form">
             <input
               type="search"
-              name="search"
+              name="name"
               placeholder="Search"
-              className="searchBar"
+              className="search-bar"
+              onChange={handleFilterChanged}
             />
-            <select className="searchFilter" name="searchFilter">
-              <option value="option1">Name</option>
-              <option value="option2">Description</option>
-              <option value="option3">Location</option>
+            <select
+              className="status-filter filter"
+              name="status"
+              onChange={handleFilterChanged}
+            >
+              <option value=""></option>
+              <option value={ProjectStatus.ACTIVE}>
+                {ProjectStatus.ACTIVE}
+              </option>
+              <option value={ProjectStatus.FUNDED}>
+                {ProjectStatus.FUNDED}
+              </option>
+              <option value={ProjectStatus.FUNDED}>
+                {ProjectStatus.PENDING_APPROVAL}
+              </option>
             </select>
-            <button type="submit" className="searchButton">
+
+            <select
+              className="funding-model-filter filter"
+              name="fundingModel"
+              onChange={handleFilterChanged}
+            >
+              <option value=""></option>
+              <option value={FundingModel.FIXED_PRICE}>
+                {FundingModel.FIXED_PRICE}
+              </option>
+              <option value={FundingModel.MICRO_INVESTMENT}>
+                {FundingModel.MICRO_INVESTMENT}
+              </option>
+            </select>
+            {/* <button type="submit" className="search-btn">
               Search
-            </button>
+            </button> */}
           </form>
         </div>
         <div className="home-header-grid-item"></div>
       </div>
     </>
   );
-}
+};
 export default HomeHeader;

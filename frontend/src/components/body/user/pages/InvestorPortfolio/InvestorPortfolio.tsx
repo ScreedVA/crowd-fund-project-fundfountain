@@ -18,7 +18,6 @@ import ProjectList from "../../../../templates/ProjectList/ProjectList";
 import { CFProjectSummary } from "../../../../../models/ProjectModel";
 import { fetchInvestorProjectListHttpRequest } from "../../../../../services/ProjectService";
 function InvestorPortfolio() {
-  const [chartData, setChartData] = useState<any>();
   const [barchartData, setBarchartData] =
     useState<InvestorShareSummaryModel[]>();
   const [piechartData, setPiechartData] =
@@ -54,7 +53,7 @@ function InvestorPortfolio() {
       setPiechartData(investorBalanceDistributionList);
     }
     async function initStackedLinechartData() {
-      const response: Response = await fetchRevenueEntriesList();
+      const response: Response = await fetchRevenueEntriesList(7);
       const revenueEntriesList: RevenueEntriesModel[] = await response.json();
       setStackedLinechartData(revenueEntriesList);
     }

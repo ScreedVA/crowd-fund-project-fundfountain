@@ -4,17 +4,11 @@ import { useEffect, useState } from "react";
 import { CFProjectSummary } from "../../../../models/ProjectModel";
 import { fetchAllProjects } from "../../../../services/ProjectService";
 
-function HomeCenter() {
-  const [projectList, setProjectList] = useState<CFProjectSummary[]>([]);
+interface HomeCenterProps {
+  projectList: CFProjectSummary[];
+}
 
-  useEffect(() => {
-    async function getProjectList() {
-      const projectListRequest: CFProjectSummary[] = await fetchAllProjects();
-      setProjectList(projectListRequest);
-    }
-    getProjectList();
-  }, []);
-
+const HomeCenter: React.FC<HomeCenterProps> = ({ projectList }) => {
   return (
     <>
       <div className="home-center-container">
@@ -22,5 +16,5 @@ function HomeCenter() {
       </div>
     </>
   );
-}
+};
 export default HomeCenter;

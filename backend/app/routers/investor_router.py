@@ -89,9 +89,6 @@ async def invest(project_id: int, request: InvestRequest, db: db_dependency, use
     db.add(investment_bridge_model)
     db.commit()
 
-
-
-
 @router.get("/current/shareList", response_model=List[InvestorShareSummarySchema])
 async def get_investor_to_cfp_share_list(db: db_dependency, user: user_dependency):
     if not user:
@@ -128,8 +125,7 @@ async def get_investor_to_cfp_share_list(db: db_dependency, user: user_dependenc
         
     return investor_to_cfp_shares
 
-
-@router.get("/current/balanceDistribution")
+@router.get("/current/balanceDistribution", response_model=List[InvestorBalanceDistributionSchema])
 async def get_investment_distribution(db: db_dependency, user: user_dependency):
     if not user:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="User not authorized, cannot access endpoint")
@@ -160,8 +156,7 @@ async def get_investment_distribution(db: db_dependency, user: user_dependency):
 
     return invest_distribution_schema_list
     
-
-@router.get("/current/balanceDetails")
+@router.get("/current/balanceDetails", response_model=BalanceDetailSchema)
 async def get_balance_details(db: db_dependency, user: user_dependency):
     if not user:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="User not authorized, cannot access endpoint")
@@ -170,12 +165,9 @@ async def get_balance_details(db: db_dependency, user: user_dependency):
     
     return transform_to_balance_details_schema_from_user_model(user_model)
 
-
 @router.get("/testInvestmentTableByUser/{user_id}")
 async def test_investment_table_by_user(user_id: int, db:db_dependency):
     return db.query(Investment).filter(Investment.investor_id == user_id).all()
-
-
 
 @router.get("/testInvestmentTableByProject/{project_id}")
 async def test_investment_table_by_project(project_id: int, db:db_dependency):

@@ -21,28 +21,30 @@
   justify-content: center;
 }
 
-.home-header-form > * {
+.home-header-form select.filter,
+.home-header-form button,
+.home-header-form input {
   font-family: "Roboto", sans-serif;
   height: 40px;
   font-size: 16px;
   border: 1px solid #cccccc;
   border-radius: 5px;
 }
-
-.home-header-form > .searchBar {
-  padding: 10px;
-  width: 400px;
-  margin-right: 10px;
-}
-
-.home-header-form > .searchFilter {
+.home-header-form select.filter,
+.home-header-form button {
   margin-right: 10px;
   background-color: #00bcd4;
   color: white;
   font-weight: bold;
 }
 
-.home-header-form > .searchButton {
+.home-header-form > .search-bar {
+  padding: 10px;
+  width: 400px;
+  margin-right: 10px;
+}
+
+.home-header-form > .search-btn {
   background-color: #00bcd4;
   transition: background-color ease 0.3s;
   color: white;

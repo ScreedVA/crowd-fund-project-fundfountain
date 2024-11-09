@@ -3,6 +3,7 @@ from fastapi import FastAPI, Depends
 from routers import user_router, auth_router, cfp_router, investor_router, revenue_router
 from sessions import engine, Base, SessionLocal
 from sqlalchemy.orm import Session
+from sqlalchemy import func
 from models import UserTable, Location, UserLocation, CrowdFundProjectTable, CrowdFundProjectLocation, Investment, RevenueTable
 from enums import FundingModel, ProjectStatus, InvestmentStatus, RevenueType, RevenueStatus
 from fastapi.middleware.cors import CORSMiddleware

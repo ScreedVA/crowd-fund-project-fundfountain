@@ -3,36 +3,48 @@ import {
   CreateCFProjectModel,
   UpdateCFProjectModel,
   ReadCFProjectModel,
+  cfpFilterModel,
 } from "../models/ProjectModel";
 import { handle401Exception } from "./AuthService";
 import { getAccessToken } from "./StorageService";
 import { API_BASE_DOMAIN } from "./CommonService";
 const API_BASE_URL: string = `${API_BASE_DOMAIN}/crowd_fund_project`;
 
-export async function fetchAllProjects() {
-  try {
-    let accessToken = getAccessToken();
-    let response: Response = await fetch(`${API_BASE_URL}`, {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    });
+export async function fetchAllProjects(
+  filter: cfpFilterModel
+): Promise<Response> {
+  let accessToken = getAccessToken();
 
-    if (!response.ok) {
-      if (response.status == 401) {
-        response = await handle401Exception(`${API_BASE_URL}`, "GET");
-      } else {
-        console.error(`Error: (${response.status} ${response.statusText})`);
-        return;
-      }
+  const params = new URLSearchParams();
+  if (filter) {
+    if (filter.name) {
+      params.append("name", filter.name);
     }
-    const resData: CFProjectSummary[] = await response.json();
-    return resData;
-  } catch (error) {
-    console.error("Fetch error: ", error);
-    return;
+    if (filter.status) {
+      params.append("status", filter.status);
+    }
+    if (filter.fundingModel) {
+      params.append("fundingModel", filter.fundingModel); // Maps to `funding_model` via alias in FastAPI
+    }
   }
+
+  const url: string = `${API_BASE_DOMAIN}/crowd_fund_project?${params.toString()}`;
+
+  let response: Response = await fetch(url, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+
+  if (!response.ok) {
+    if (response.status == 401) {
+      response = await handle401Exception(url, "GET");
+    } else {
+      console.error(`Error: (${response.status} ${response.statusText})`);
+    }
+  }
+  return response;
 }
 
 export async function fetchProjectByIdHttpRequest(projectId: number) {

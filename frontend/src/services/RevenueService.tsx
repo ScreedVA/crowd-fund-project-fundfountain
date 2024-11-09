@@ -4,10 +4,12 @@ import { getAccessToken } from "./StorageService";
 
 const API_BASE_URL: string = `${API_BASE_DOMAIN}/revenue`;
 
-export async function fetchRevenueEntriesList(): Promise<Response> {
+export async function fetchRevenueEntriesList(
+  numberOfDays: number
+): Promise<Response> {
   let accessToken = getAccessToken();
   let response: Response = await fetch(
-    `${API_BASE_URL}/current/weekly/entries`,
+    `${API_BASE_URL}/current/daily/entries/${numberOfDays}`,
     {
       method: "GET",
       headers: {
@@ -19,7 +21,7 @@ export async function fetchRevenueEntriesList(): Promise<Response> {
   if (!response.ok) {
     if (response.status == 401) {
       response = await handle401Exception(
-        `${API_BASE_URL}/current/weekly/entries`,
+        `${API_BASE_URL}/current/daily/entries/${numberOfDays}`,
         "GET"
       );
     } else {

@@ -48,4 +48,12 @@ class CreateCFProject(CrowdFundProjectBaseModel):
 class UpdateCFProject(CrowdFundProjectBaseModel):
     location: Optional[ReadLocationRequest] = Field(None)
 
+class cfpFilterSchema(BaseModel):
+    name: Optional[str] = Field(None)
+    status: Optional[ProjectStatus]  = Field(None)
+    funding_model: Optional[FundingModel] = Field(None, alias="fundingModel")
+
+    class Config:
+        populate_by_name = True
+
 

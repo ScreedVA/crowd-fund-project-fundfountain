@@ -2,13 +2,13 @@ from fastapi import APIRouter, Depends, HTTPException
 from sessions import SessionLocal
 from sqlalchemy.orm import Session
 from models import CrowdFundProjectTable, UserTable, Location, CrowdFundProjectLocation
-from schemas import CrowdFundProjectSummary, ReadCrowdFundProject, CreateCFProject, ReadLocationRequest, UpdateCFProject
+from schemas import CrowdFundProjectSummary, ReadCrowdFundProject, CreateCFProject, ReadLocationRequest, UpdateCFProject, cfpFilterSchema
 from enums import FundingModel, InvestmentStatus
 from services import transform_to_cfp_summary_schema_from_model, transform_to_cfp_details_schema_from_model, validate_project_fields, transform_to_model_from_cfp_create_schema, transform_to_location_model_from_req, transform_to_location_read_schema_from_model
 from .auth_router import get_current_user
-from typing import Annotated
+from typing import Annotated, List
 from starlette import status
-
+from sqlalchemy import and_
 
 router = APIRouter(
     prefix='/crowd_fund_project',
@@ -27,15 +27,31 @@ user_dependency = Annotated[dict, Depends(get_current_user)]
 
 
 @router.get('/', response_model=list[CrowdFundProjectSummary], status_code=status.HTTP_200_OK)
-async def read_all_projects(db: db_dependency):
+async def read_projects_list(db: db_dependency, filters: cfpFilterSchema = Depends()):
     
-    cfp_models: list[CrowdFundProjectTable] = db.query(CrowdFundProjectTable).all()
+    query = db.query(CrowdFundProjectTable)
+    
+    filter_conditions = []
+
+    # Add filters conditionally based on the input
+    if filters.name:
+        filter_conditions.append(CrowdFundProjectTable.name.ilike(f"%{filters.name}%"))  # Case-insensitive search
+    if filters.status:
+        filter_conditions.append(CrowdFundProjectTable.status == filters.status)
+    if filters.funding_model:
+        filter_conditions.append(CrowdFundProjectTable.funding_model == filters.funding_model)
+
+    if filter_conditions:
+        query = query.filter(and_(*filter_conditions))
+    
+    cfp_models = query.all()
+
     cfp_response = [transform_to_cfp_summary_schema_from_model(model) for model in cfp_models]
 
     return cfp_response
 
 @router.get('/current/owner/list', response_model=list[CrowdFundProjectSummary], status_code=status.HTTP_200_OK)
-async def read_all_owned_projects(db: db_dependency, user: user_dependency):
+async def read_owned_projects_list(db: db_dependency, user: user_dependency):
     
     if not user:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Cannot retrieve projects from this user")
@@ -45,7 +61,7 @@ async def read_all_owned_projects(db: db_dependency, user: user_dependency):
     return cfp_response
 
 @router.get('/current/investor/list', response_model=list[CrowdFundProjectSummary], status_code=status.HTTP_200_OK)
-async def read_all_invested_projects(db: db_dependency, user: user_dependency):
+async def read_invested_projects_list(db: db_dependency, user: user_dependency):
     
     if not user:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Cannot retrieve projects from this user")

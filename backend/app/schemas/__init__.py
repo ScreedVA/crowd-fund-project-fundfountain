@@ -1,4 +1,4 @@
-from .cfp_schemas import CrowdFundProjectSummary, ReadCrowdFundProject,  CreateCFProject, UpdateCFProject
+from .cfp_schemas import CrowdFundProjectSummary, ReadCrowdFundProject,  CreateCFProject, UpdateCFProject, cfpFilterSchema
 from .location_schemas import ReadLocationRequest, CreateLocationRequest, UpdateLocationRequest
 from .user_schemas import ReadUserRequest, UpdateUserRequest, ReadUserSummary, CreateUserRequest
 from .investor_schemas import InvestorShareSummarySchema, InvestRequest, BalanceDetailSchema, InvestorBalanceDistributionSchema
