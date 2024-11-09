@@ -2,7 +2,6 @@ import "./StackedLineChart.css";
 import * as echarts from "echarts";
 import { useEffect, useRef } from "react";
 import { RevenueEntriesModel } from "../../../../models/RevenueModel";
-import { getDateRangeAndData } from "../../../../services/CommonService";
 interface StackedLineChartProps {
   revenueEntriesList: RevenueEntriesModel[];
 }
@@ -14,11 +13,11 @@ const StackedLineChart: React.FC<StackedLineChartProps> = ({
 
   useEffect(() => {
     const charInstance = echarts.init(charRef.current);
-    const { dateArray } = getDateRangeAndData(revenueEntriesList);
 
     const options = {
       title: {
         text: "Project Revenue History",
+        left: "left",
         textStyle: {
           color: "#FFFFFF",
         },
@@ -27,16 +26,19 @@ const StackedLineChart: React.FC<StackedLineChartProps> = ({
         trigger: "axis",
       },
       legend: {
+        left: "right",
+        orient: "vertical",
+
         textStyle: {
           color: "#FFFFFF",
         },
         data: revenueEntriesList.map((value) => value.projectName),
       },
       grid: {
-        left: "3%",
+        left: "10%",
         right: "4%",
-        bottom: "3%",
-        containLabel: true,
+        containsLabel: true,
+        height: "70%",
       },
       toolbox: {
         feature: {

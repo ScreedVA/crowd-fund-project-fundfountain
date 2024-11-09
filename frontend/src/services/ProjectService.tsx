@@ -58,7 +58,7 @@ export async function fetchProjectByIdHttpRequest(projectId: number) {
 
 export async function fetchProjectListByCurrentUser() {
   let accessToken = getAccessToken();
-  let response: Response = await fetch(`${API_BASE_URL}/list/byCurrentUser`, {
+  let response: Response = await fetch(`${API_BASE_URL}/current/owner/list`, {
     method: "GET",
     headers: {
       Authorization: `Bearer ${accessToken}`,
@@ -68,7 +68,7 @@ export async function fetchProjectListByCurrentUser() {
   if (!response.ok) {
     if (response.status == 401) {
       response = await handle401Exception(
-        `${API_BASE_URL}/list/byCurrentUser`,
+        `${API_BASE_URL}/current/owner/list`,
         "GET"
       );
     } else {
@@ -78,6 +78,32 @@ export async function fetchProjectListByCurrentUser() {
 
   const resData: CFProjectSummary[] = await response.json();
   return resData;
+}
+
+export async function fetchInvestorProjectListHttpRequest() {
+  let accessToken = getAccessToken();
+  let response: Response = await fetch(
+    `${API_BASE_URL}/current/investor/list`,
+    {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    }
+  );
+
+  if (!response.ok) {
+    if (response.status == 401) {
+      response = await handle401Exception(
+        `${API_BASE_URL}/current/investor/list`,
+        "GET"
+      );
+    } else {
+      console.error(`Error: (${response.status} ${response.statusText})`);
+    }
+  }
+
+  return response;
 }
 
 export async function createCFProjectHttpRequest(

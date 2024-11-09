@@ -9,7 +9,8 @@ def transform_to_cfp_summary_schema_from_model(model: CrowdFundProjectTable) -> 
         id=model.id,
         name=model.name,
         description=model.description,
-        status=model.status
+        status=model.status,
+        owner_id=model.owner_id
     )
     
     return schema
@@ -29,7 +30,8 @@ def transform_to_cfp_details_schema_from_model(model: CrowdFundProjectTable) -> 
         valuation=model.valuation,
         status=model.status,
         funding_model=model.funding_model,
-        funding_progress=float(model.funding_progress)
+        funding_progress=float(model.funding_progress),
+        owner_id=model.owner_id
     )
     return schema
 

@@ -42,7 +42,7 @@
   border-radius: 8px;
 }
 
-.project-invest-btn {
+.project-details-btn {
   border: 2px solid #00bcd4;
   background-color: #00bcd4;
   color: white;
@@ -56,7 +56,7 @@
   transition: background-color 0.3s ease;
 }
 
-.project-invest-btn:hover {
+.project-details-btn:hover {
   background-color: #008c9e;
 }
 

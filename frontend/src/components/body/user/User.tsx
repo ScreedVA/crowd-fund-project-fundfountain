@@ -26,6 +26,7 @@ function User() {
           <UserMenuBar
             sendIndexToFromUserMenuBar={handleMenuItemChange}
             selectOptions={selectOptions}
+            selectedIndex={selectedIndex}
           />
         </div>
         <div className="user-right">

@@ -25,7 +25,7 @@ db_dependency = Annotated[Session, Depends(get_db)]
 user_dependency = Annotated[dict, Depends(get_current_user)]
 
 
-@router.get("/current/entries")
+@router.get("/current/weekly/entries")
 async def get_revenue_entries(db: db_dependency, user: user_dependency):
     if not user:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="User not authorized, cannot access endpoint")
@@ -49,10 +49,23 @@ async def get_revenue_entries(db: db_dependency, user: user_dependency):
             )
             
             # Poplate dateList and amountList
-            for revenue_entry in cfp_model.revenue_list:
-                revenue_entries_schema.date_list.append(datetime.strftime(revenue_entry.distribution_date, "%Y-%m-%d"))
-                revenue_entries_schema.amount_list.append(revenue_entry.amount)
-
-            revenue_entries_schema_list.append(revenue_entries_schema)
+            for i in range(0, 7):
+                if len(cfp_model.revenue_list) >= 7:
+                    revenue_entries_schema.date_list.append(datetime.strftime(cfp_model.revenue_list[i].distribution_date, "%Y-%m-%d"))
+                    revenue_entries_schema.amount_list.append(cfp_model.revenue_list[i].amount)
+                
+             # Only include revenue_entries with a history of atleast 7 days   
+            if len(revenue_entries_schema.date_list) == 7:
+                revenue_entries_schema_list.append(revenue_entries_schema)
     return revenue_entries_schema_list     
+
+@router.get("/current/weekly/distribution")
+async def get_revenue_entries(db: db_dependency, user: user_dependency):
+    if not user:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="User not authorized, cannot access endpoint")
+    
+    user_model: UserTable = db.query(UserTable).filter(UserTable.id == user["id"]).first()
+    if not user_model:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not Found")
+
 

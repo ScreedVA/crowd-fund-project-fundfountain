@@ -22,7 +22,7 @@ const InvestorMenuBar: React.FC<InvestorMenuBarProps> = ({
             <li
               key={index}
               style={{
-                backgroundColor: selectedIndex == index ? "#008c9e" : "#1e3a5f",
+                backgroundColor: selectedIndex == index ? "#00bcd4" : "#1e3a5f",
               }}
               className={`investor-menu-item item-${index}`}
               onClick={() => handleMenuItemSelect(index)}

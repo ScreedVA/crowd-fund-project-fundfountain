@@ -19,6 +19,7 @@ interface CFProjectBaseModel {
 export interface CFProjectSummary extends CFProjectBaseModel {
   id?: number;
   status: ProjectStatus;
+  ownerId: number;
 }
 
 export interface ReadCFProjectModel extends CFProjectBaseModel {
@@ -34,6 +35,7 @@ export interface ReadCFProjectModel extends CFProjectBaseModel {
   fundingModel: FundingModel;
   fundingProgress: number;
   location?: ReadLocationRequest;
+  ownerId: number;
 }
 
 export interface CreateCFProjectModel extends CFProjectBaseModel {

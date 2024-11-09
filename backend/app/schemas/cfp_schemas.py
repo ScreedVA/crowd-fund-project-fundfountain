@@ -9,6 +9,10 @@ class CrowdFundProjectSummary(BaseModel):
     name: str = Field(min_length=3)
     description: str = Field(min_length=3)
     status: ProjectStatus
+    owner_id: int = Field(alias="ownerId")
+
+    class Config:
+        populate_by_name = True
 
 class CrowdFundProjectBaseModel(BaseModel):
     name: str = Field(min_length=3)
@@ -30,6 +34,7 @@ class ReadCrowdFundProject(CrowdFundProjectBaseModel):
     last_date: str = Field(..., alias="lastDate")
     status: ProjectStatus
     location: Optional[ReadLocationRequest] = Field(None)
+    owner_id: int = Field(alias="ownerId")
 
 class CreateCFProject(CrowdFundProjectBaseModel):
     start_date: str = Field(..., alias="startDate")

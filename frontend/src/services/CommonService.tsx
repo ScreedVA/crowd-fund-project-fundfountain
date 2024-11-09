@@ -16,29 +16,3 @@ export function isLocationField(field: any) {
   ].includes(field);
   return isLocationField;
 }
-
-export function getDateRangeAndData(revenueEntries: RevenueEntriesModel[]) {
-  // Flatten all dates from all projects into one array
-
-  const allDates = revenueEntries.map((project) => project.dateList).flat();
-
-  // Convert all dates to timestamps and find min and max
-  const minDate = new Date(
-    Math.min(...allDates.map((date) => new Date(date).getTime()))
-  );
-  console.log(`minDate: ${minDate}`);
-  const maxDate = new Date(
-    Math.max(...allDates.map((date) => new Date(date).getTime()))
-  );
-  console.log(`maxDate: ${maxDate}`);
-
-  // Create an array of dates from minDate to maxDate
-  const dateArray: string[] = [];
-  let currentDate = minDate;
-  while (currentDate <= maxDate) {
-    dateArray.push(new Date(currentDate).toISOString().split("T")[0]); // Format as YYYY-MM-DD
-    currentDate.setDate(currentDate.getDate() + 1); // Move to next day
-  }
-
-  return { dateArray, minDate, maxDate };
-}

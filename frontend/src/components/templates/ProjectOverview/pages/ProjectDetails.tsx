@@ -14,6 +14,7 @@ import {
   validateMicroInvestmentInput,
 } from "../../../../services/ValidationService";
 import { investHttpRequest } from "../../../../services/InvestorService";
+import { fetchCFPResourcePermissionsHttpRequest } from "../../../../services/AuthService";
 interface ProjectDetailsProps {
   projectId: number;
   isUserPath: boolean;
@@ -24,6 +25,9 @@ const ProjectDetails: React.FC<ProjectDetailsProps> = ({
   isUserPath,
 }) => {
   const [projectDetails, setProjectDetails] = useState<ReadCFProjectModel>();
+  const [resourcePermissions, setResourcePermissions] = useState<{
+    canEdit: string;
+  }>();
   const [investRequest, setInvestRequest] = useState<InvestRequestModel>({
     microInvestmentAmount: 0,
     unitsToInvest: 0,
@@ -37,8 +41,16 @@ const ProjectDetails: React.FC<ProjectDetailsProps> = ({
     async function getProjectById() {
       const projectResponse: ReadCFProjectModel =
         await fetchProjectByIdHttpRequest(projectId);
+      async function getCFPProjectResourcePermissions() {
+        const response: Response = await fetchCFPResourcePermissionsHttpRequest(
+          projectId
+        );
+        const permissionResponse: { canEdit: string } = await response.json();
+        setResourcePermissions(permissionResponse);
+      }
 
       setProjectDetails(projectResponse);
+      getCFPProjectResourcePermissions();
     }
     getProjectById();
   }, [reload]);
@@ -46,6 +58,8 @@ const ProjectDetails: React.FC<ProjectDetailsProps> = ({
   const handleEditClick = () => {
     navigate(`/edit/project/${projectId}`);
   };
+
+  const handleMoreBtnClick = () => {};
 
   const handleInvestClick = () => {
     setModalOpen(true);
@@ -155,26 +169,46 @@ const ProjectDetails: React.FC<ProjectDetailsProps> = ({
             <h4>Funding Model: {projectDetails?.fundingModel}</h4>
             <h4>Funding Progress: {projectDetails?.fundingProgress}%</h4>
           </div>
+        </div>
+
+        <div className="project-box">
+          <div>
+            <button className="project-details-btn">
+              <a onClick={handleMoreBtnClick}>More</a>
+            </button>
+          </div>
 
           {/* Edit/Invest Buttun */}
           {!isUserPath ? (
-            <div className="project-box">
-              <button
-                className="project-invest-btn"
-                onClick={handleInvestClick}
-              >
-                <a>Invest</a>
-              </button>
-            </div>
+            <>
+              {projectDetails?.status == ProjectStatus.ACTIVE && (
+                <div className="">
+                  <button
+                    className="project-details-btn"
+                    onClick={handleInvestClick}
+                  >
+                    <a>Invest</a>
+                  </button>
+                </div>
+              )}
+            </>
           ) : (
-            <div className="project-box">
-              <button className="project-invest-btn" onClick={handleEditClick}>
-                <a>Edit</a>
-              </button>
-            </div>
+            <>
+              {resourcePermissions?.canEdit && (
+                <div className="">
+                  <button
+                    className="project-details-btn"
+                    onClick={handleEditClick}
+                  >
+                    <a>Edit</a>
+                  </button>
+                </div>
+              )}
+            </>
           )}
         </div>
       </div>
+      {/* <div className="project-box"></div> */}
 
       {/* Modal Form */}
       {isModalOpen && (

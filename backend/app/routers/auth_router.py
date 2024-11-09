@@ -8,7 +8,7 @@ from jose import jwt, JWTError
 from sqlalchemy.orm import Session
 from sessions import SessionLocal
 from schemas.user_schemas import CreateUserRequest, Token, RefreshTokenRequest
-from models import UserTable, UserLocation, RefreshToken
+from models import UserTable, UserLocation, RefreshToken, CrowdFundProjectTable
 from services import transform_to_location_model_from_req
 
 
@@ -32,7 +32,6 @@ def get_db():
 
 
 db_dependency = Annotated[Session, Depends(get_db)]
-
 
 
 def authenticate_user(username: str, password: str, db):
@@ -64,6 +63,7 @@ async def get_current_user(token: Annotated[str, Depends(oauth2_bearer)]):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
                             detail='Could not validate user.')
     
+user_dependency = Annotated[dict, Depends(get_current_user)]
 # Example function to clean up expired tokens
 
 def cleanup_expired_tokens(db: db_dependency):
@@ -149,3 +149,15 @@ async def refresh_access_token(request_body: RefreshTokenRequest, db: db_depende
 @router.get("/getAllRefreshTokens") 
 async def get_all_refresh_tokens(db: db_dependency): 
     return  db.query(RefreshToken).all()
+
+
+@router.get('/current/checkOwnerOrAdminPermission/{cfp_id}')
+async def check_owner_admin_permissions(db: db_dependency, user: user_dependency, cfp_id: int):
+    
+    if not user:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Cannot retrieve projects from this user")
+    
+    cfp_models: list[CrowdFundProjectTable] = db.query(CrowdFundProjectTable).filter(CrowdFundProjectTable.owner_id == user["id"]).all()
+    if cfp_id in [model.id for model in cfp_models]:
+        return {"canEdit": True}
+    return {"canEdit": False}

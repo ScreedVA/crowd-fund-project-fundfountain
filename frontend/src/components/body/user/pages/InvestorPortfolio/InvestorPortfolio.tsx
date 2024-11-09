@@ -14,6 +14,9 @@ import InvestorMenuBar from "./pages/InvestorMenuBar";
 import StackedLineChart from "../../../../templates/Charts/StackedLineChart/StackedLineChart";
 import { fetchRevenueEntriesList } from "../../../../../services/RevenueService";
 import { RevenueEntriesModel } from "../../../../../models/RevenueModel";
+import ProjectList from "../../../../templates/ProjectList/ProjectList";
+import { CFProjectSummary } from "../../../../../models/ProjectModel";
+import { fetchInvestorProjectListHttpRequest } from "../../../../../services/ProjectService";
 function InvestorPortfolio() {
   const [chartData, setChartData] = useState<any>();
   const [barchartData, setBarchartData] =
@@ -22,6 +25,8 @@ function InvestorPortfolio() {
     useState<InvestorBalanceDistributionModel[]>();
   const [stackedLinechartData, setStackedLinechartData] =
     useState<RevenueEntriesModel[]>();
+  const [investorProjectList, setInvestorProjectList] =
+    useState<CFProjectSummary[]>();
   const [selectedIndex, setSelectedIndex] = useState(0);
   const selectOptions: string[] = [
     "Shares Owned",
@@ -53,6 +58,13 @@ function InvestorPortfolio() {
       const revenueEntriesList: RevenueEntriesModel[] = await response.json();
       setStackedLinechartData(revenueEntriesList);
     }
+    async function initInvestorProjectList() {
+      const response = await fetchInvestorProjectListHttpRequest();
+      const investorProjectListResponse = await response.json();
+      setInvestorProjectList(investorProjectListResponse);
+    }
+
+    initInvestorProjectList();
 
     selectedIndex == 0 && initBarchartData();
     selectedIndex == 1 && initPiechartData();
@@ -98,7 +110,12 @@ function InvestorPortfolio() {
             </div>
           </div>
           <div className="investor-right">
-            <h2>Stacked Line Chart</h2>
+            <h2>Project List</h2>
+            <div className="project-list">
+              {investorProjectList && (
+                <ProjectList projectList={investorProjectList} />
+              )}
+            </div>
           </div>
         </div>
       </div>

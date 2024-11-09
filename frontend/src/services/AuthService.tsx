@@ -101,6 +101,34 @@ export async function LoginForToken(
   return resData;
 }
 
+export async function fetchCFPResourcePermissionsHttpRequest(
+  projectId: number
+) {
+  let accessToken = getAccessToken();
+  let response: Response = await fetch(
+    `${API_BASE_URL}/current/checkOwnerOrAdminPermission/${projectId}`,
+    {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    }
+  );
+
+  if (!response.ok) {
+    if (response.status == 401) {
+      response = await handle401Exception(
+        `${API_BASE_URL}/current/checkOwnerOrAdminPermission/${projectId}`,
+        "GET"
+      );
+    } else {
+      console.error(`Error: (${response.status} ${response.statusText})`);
+    }
+  }
+
+  return response;
+}
+
 interface AuthContextType {
   signedIn: boolean;
   login: (access_token: string, refresh_token: string) => void;

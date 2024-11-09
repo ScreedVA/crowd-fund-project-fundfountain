@@ -5,7 +5,7 @@
 .investor-wrapper {
   height: 100%;
   display: grid;
-  grid-template-columns: 80% 20%;
+  grid-template-columns: 70% 30%;
 }
 
 .investor-left {
@@ -21,4 +21,18 @@
 .investor-left > .investor-chart-container {
   height: 100%;
   grid-row: 2;
+}
+
+.investor-right {
+  grid-column: 2;
+}
+
+.investor-right h2 {
+  color: white;
+  max-height: 100%;
+}
+
+.investor-right > .project-list {
+  overflow-y: auto;
+  max-height: calc(88vh - 40px);
 }

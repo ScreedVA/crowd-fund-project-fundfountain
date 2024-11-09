@@ -1,8 +1,8 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sessions import SessionLocal
 from sqlalchemy.orm import Session
-from models import CrowdFundProjectTable, Investment, Location, CrowdFundProjectLocation
-from schemas import CrowdFundProjectSummary, ReadCrowdFundProject, InvestRequest, CreateCFProject, ReadLocationRequest, UpdateCFProject
+from models import CrowdFundProjectTable, UserTable, Location, CrowdFundProjectLocation
+from schemas import CrowdFundProjectSummary, ReadCrowdFundProject, CreateCFProject, ReadLocationRequest, UpdateCFProject
 from enums import FundingModel, InvestmentStatus
 from services import transform_to_cfp_summary_schema_from_model, transform_to_cfp_details_schema_from_model, validate_project_fields, transform_to_model_from_cfp_create_schema, transform_to_location_model_from_req, transform_to_location_read_schema_from_model
 from .auth_router import get_current_user
@@ -34,8 +34,8 @@ async def read_all_projects(db: db_dependency):
 
     return cfp_response
 
-@router.get('/list/byCurrentUser', response_model=list[CrowdFundProjectSummary], status_code=status.HTTP_200_OK)
-async def read_all_projects(db: db_dependency, user: user_dependency):
+@router.get('/current/owner/list', response_model=list[CrowdFundProjectSummary], status_code=status.HTTP_200_OK)
+async def read_all_owned_projects(db: db_dependency, user: user_dependency):
     
     if not user:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Cannot retrieve projects from this user")
@@ -43,6 +43,23 @@ async def read_all_projects(db: db_dependency, user: user_dependency):
     cfp_response = [transform_to_cfp_summary_schema_from_model(model) for model in cfp_models]
 
     return cfp_response
+
+@router.get('/current/investor/list', response_model=list[CrowdFundProjectSummary], status_code=status.HTTP_200_OK)
+async def read_all_invested_projects(db: db_dependency, user: user_dependency):
+    
+    if not user:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Cannot retrieve projects from this user")
+    user_model: UserTable = db.query(UserTable).filter(UserTable.id == user["id"]).first()
+    if not user_model:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not Found")
+
+
+    unique_cfp_id_list: list[int] = list(dict.fromkeys(invest_bridge.crowd_fund_project_id for invest_bridge in user_model.bridge_investments))
+    cfp_models: list[CrowdFundProjectTable] = [db.query(CrowdFundProjectTable).filter(CrowdFundProjectTable.id == cfp_id).first() for cfp_id in unique_cfp_id_list]
+    cfp_response = [transform_to_cfp_summary_schema_from_model(model) for model in cfp_models]
+
+    return cfp_response
+
 
 @router.get("/{project_id}", response_model=ReadCrowdFundProject)
 async def read_project_by_id(project_id: int, db: db_dependency):
@@ -56,6 +73,8 @@ async def read_project_by_id(project_id: int, db: db_dependency):
         cfp_response.location = location_response
 
     return cfp_response
+
+
 
 @router.post("/", status_code=status.HTTP_201_CREATED)
 async def create_project(db: db_dependency, user: user_dependency,  request: CreateCFProject,):
@@ -114,6 +133,8 @@ async def update_project(request: UpdateCFProject, project_id: int,user: user_de
         location.update_from_request(request.location) 
         db.add(location)
         db.commit()
+
+
 
 
 

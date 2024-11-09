@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 from models import CrowdFundProjectTable, Investment, UserTable
 from schemas import InvestRequest, InvestorShareSummarySchema, BalanceDetailSchema, InvestorBalanceDistributionSchema
 from services import transform_to_balance_details_schema_from_user_model
-from enums import FundingModel, InvestmentStatus
+from enums import FundingModel, InvestmentStatus, ProjectStatus
 from .auth_router import get_current_user
 from typing import Annotated
 from starlette import status
@@ -58,6 +58,9 @@ async def invest(project_id: int, request: InvestRequest, db: db_dependency, use
         cfp_model.invest_micro_investment(request.micro_investment_amount)
         user_model.withdraw_balance(request.micro_investment_amount)
 
+    if cfp_model.funding_progress == 100:
+        cfp_model.status = ProjectStatus.FUNDED
+        
     db.add(user_model)
     db.add(cfp_model)
     db.commit()
