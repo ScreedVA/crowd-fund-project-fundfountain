@@ -1,10 +1,10 @@
 from typing import Annotated
 from fastapi import FastAPI, Depends
-from routers import user_router, auth_router, cfp_router, investor_router
+from routers import user_router, auth_router, cfp_router, investor_router, revenue_router
 from sessions import engine, Base, SessionLocal
 from sqlalchemy.orm import Session
-from models import UserTable, Location, UserLocation, CrowdFundProjectTable, CrowdFundProjectLocation, Investment
-from enums import FundingModel, ProjectStatus, InvestmentStatus
+from models import UserTable, Location, UserLocation, CrowdFundProjectTable, CrowdFundProjectLocation, Investment, RevenueTable
+from enums import FundingModel, ProjectStatus, InvestmentStatus, RevenueType, RevenueStatus
 from fastapi.middleware.cors import CORSMiddleware
 from datetime import datetime
 app = FastAPI()
@@ -28,6 +28,7 @@ app.include_router(auth_router.router)
 app.include_router(user_router.router)
 app.include_router(cfp_router.router)
 app.include_router(investor_router.router)
+app.include_router(revenue_router.router)
 
 
 def get_db():
@@ -115,6 +116,40 @@ def add_default_data(db: db_dependency):
         Investment(crowd_fund_project_id=6, investor_id=3,  share_percentage=56.66, status=InvestmentStatus.PAID, transaction_amount=68000)
     ]
 
+    # Revenue entries for CrowdFundProjectTable(id=4) - "Biodegradable Phone Case"
+    revenue_entries_project_4 = [
+        RevenueTable(amount=5000, distribution_date=datetime.strptime("2024-11-15", "%Y-%m-%d"), revenue_type=RevenueType.SALES, revenue_status=RevenueStatus.DISTRIBUTED, crowd_fund_project_id=4),
+        RevenueTable(amount=7000, distribution_date=datetime.strptime("2024-11-16", "%Y-%m-%d"), revenue_type=RevenueType.AD_REVENUE, revenue_status=RevenueStatus.DISTRIBUTED, crowd_fund_project_id=4),
+        RevenueTable(amount=8000, distribution_date=datetime.strptime("2024-12-17", "%Y-%m-%d"), revenue_type=RevenueType.SALES, revenue_status=RevenueStatus.DISTRIBUTED, crowd_fund_project_id=4),
+        RevenueTable(amount=4500, distribution_date=datetime.strptime("2024-12-18", "%Y-%m-%d"), revenue_type=RevenueType.ROYALTY, revenue_status=RevenueStatus.DISTRIBUTED, crowd_fund_project_id=4),
+        RevenueTable(amount=6000, distribution_date=datetime.strptime("2024-12-19", "%Y-%m-%d"), revenue_type=RevenueType.SALES, revenue_status=RevenueStatus.DISTRIBUTED, crowd_fund_project_id=4),
+        RevenueTable(amount=3000, distribution_date=datetime.strptime("2024-12-20", "%Y-%m-%d"), revenue_type=RevenueType.AD_REVENUE, revenue_status=RevenueStatus.DISTRIBUTED, crowd_fund_project_id=4),
+        RevenueTable(amount=7500, distribution_date=datetime.strptime("2024-12-21", "%Y-%m-%d"), revenue_type=RevenueType.ROYALTY, revenue_status=RevenueStatus.DISTRIBUTED, crowd_fund_project_id=4),
+    ]
+
+    # Revenue entries for CrowdFundProjectTable(id=5) - "Portable Water Purifier Bottle"
+    revenue_entries_project_5 = [
+        RevenueTable(amount=9000, distribution_date=datetime.strptime("2024-11-15", "%Y-%m-%d"), revenue_type=RevenueType.SALES, revenue_status=RevenueStatus.DISTRIBUTED, crowd_fund_project_id=5),
+        RevenueTable(amount=12000, distribution_date=datetime.strptime("2024-11-16", "%Y-%m-%d"), revenue_type=RevenueType.AD_REVENUE, revenue_status=RevenueStatus.DISTRIBUTED, crowd_fund_project_id=5),
+        RevenueTable(amount=11000, distribution_date=datetime.strptime("2024-12-17", "%Y-%m-%d"), revenue_type=RevenueType.SALES, revenue_status=RevenueStatus.DISTRIBUTED, crowd_fund_project_id=5),
+        RevenueTable(amount=7500, distribution_date=datetime.strptime("2024-12-18", "%Y-%m-%d"), revenue_type=RevenueType.ROYALTY, revenue_status=RevenueStatus.DISTRIBUTED, crowd_fund_project_id=5),
+        RevenueTable(amount=9500, distribution_date=datetime.strptime("2024-12-19", "%Y-%m-%d"), revenue_type=RevenueType.SALES, revenue_status=RevenueStatus.DISTRIBUTED, crowd_fund_project_id=5),
+        RevenueTable(amount=8200, distribution_date=datetime.strptime("2024-12-20", "%Y-%m-%d"), revenue_type=RevenueType.AD_REVENUE, revenue_status=RevenueStatus.DISTRIBUTED, crowd_fund_project_id=5),
+        RevenueTable(amount=10500, distribution_date=datetime.strptime("2024-12-21", "%Y-%m-%d"), revenue_type=RevenueType.ROYALTY, revenue_status=RevenueStatus.DISTRIBUTED, crowd_fund_project_id=5),
+    ]
+
+    # Revenue entries for CrowdFundProjectTable(id=6) - "Smart Indoor Garden"
+    revenue_entries_project_6 = [
+        RevenueTable(amount=13000, distribution_date=datetime.strptime("2024-11-15", "%Y-%m-%d"), revenue_type=RevenueType.SALES, revenue_status=RevenueStatus.DISTRIBUTED, crowd_fund_project_id=6),
+        RevenueTable(amount=9500, distribution_date=datetime.strptime("2024-11-16","%Y-%m-%d"), revenue_type=RevenueType.AD_REVENUE, revenue_status=RevenueStatus.DISTRIBUTED, crowd_fund_project_id=6),
+        RevenueTable(amount=12000, distribution_date=datetime.strptime("2024-12-17", "%Y-%m-%d"), revenue_type=RevenueType.SALES, revenue_status=RevenueStatus.DISTRIBUTED, crowd_fund_project_id=6),
+        RevenueTable(amount=10800, distribution_date=datetime.strptime("2024-12-18", "%Y-%m-%d"), revenue_type=RevenueType.ROYALTY, revenue_status=RevenueStatus.DISTRIBUTED, crowd_fund_project_id=6),
+        RevenueTable(amount=11500, distribution_date=datetime.strptime("2024-12-19", "%Y-%m-%d"), revenue_type=RevenueType.SALES, revenue_status=RevenueStatus.DISTRIBUTED, crowd_fund_project_id=6),
+        RevenueTable(amount=7800, distribution_date=datetime.strptime("2024-12-20","%Y-%m-%d"), revenue_type=RevenueType.AD_REVENUE, revenue_status=RevenueStatus.DISTRIBUTED, crowd_fund_project_id=6),
+        RevenueTable(amount=12500, distribution_date=datetime.strptime("2024-12-21", "%Y-%m-%d"), revenue_type=RevenueType.ROYALTY, revenue_status=RevenueStatus.DISTRIBUTED, crowd_fund_project_id=6),
+    ]
+
+
     
     # Add User Tables
     for user in default_users:
@@ -150,12 +185,19 @@ def add_default_data(db: db_dependency):
         db.add(cfp_bridge_location)
         db.commit()
 
+    # Add Investment Bridge Tables
     for investments in default_investment_bridges:
         db.add(investments)
         db.commit()
 
-    
-    
+    # Add Revenue Entry Tables
+    for revenue_entry in revenue_entries_project_4:
+        db.add(revenue_entry)
+    for revenue_entry in revenue_entries_project_5:
+        db.add(revenue_entry)
+    for revenue_entry in revenue_entries_project_6:
+        db.add(revenue_entry)
+    db.commit()
 
 @app.on_event("startup")
 def startup_event():

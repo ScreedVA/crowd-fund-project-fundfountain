@@ -12,12 +12,16 @@ import {
 } from "../../../../../services/InvestorService";
 import InvestorMenuBar from "./pages/InvestorMenuBar";
 import StackedLineChart from "../../../../templates/Charts/StackedLineChart/StackedLineChart";
+import { fetchRevenueEntriesList } from "../../../../../services/RevenueService";
+import { RevenueEntriesModel } from "../../../../../models/RevenueModel";
 function InvestorPortfolio() {
   const [chartData, setChartData] = useState<any>();
   const [barchartData, setBarchartData] =
     useState<InvestorShareSummaryModel[]>();
   const [piechartData, setPiechartData] =
     useState<InvestorBalanceDistributionModel[]>();
+  const [stackedLinechartData, setStackedLinechartData] =
+    useState<RevenueEntriesModel[]>();
   const [selectedIndex, setSelectedIndex] = useState(0);
   const selectOptions: string[] = [
     "Shares Owned",
@@ -44,9 +48,15 @@ function InvestorPortfolio() {
         await resposne.json();
       setPiechartData(investorBalanceDistributionList);
     }
+    async function initStackedLinechartData() {
+      const response: Response = await fetchRevenueEntriesList();
+      const revenueEntriesList: RevenueEntriesModel[] = await response.json();
+      setStackedLinechartData(revenueEntriesList);
+    }
 
     selectedIndex == 0 && initBarchartData();
     selectedIndex == 1 && initPiechartData();
+    selectedIndex == 2 && initStackedLinechartData();
   }, [selectedIndex]);
 
   return (
@@ -82,7 +92,9 @@ function InvestorPortfolio() {
                   )}
                 />
               )}
-              {selectedIndex == 2 && <StackedLineChart />}
+              {stackedLinechartData && selectedIndex == 2 && (
+                <StackedLineChart revenueEntriesList={stackedLinechartData} />
+              )}
             </div>
           </div>
           <div className="investor-right">

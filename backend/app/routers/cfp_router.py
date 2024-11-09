@@ -116,7 +116,7 @@ async def update_project(request: UpdateCFProject, project_id: int,user: user_de
         db.commit()
 
 
-    
+
 
 
 
