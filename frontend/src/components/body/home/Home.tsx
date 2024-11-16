@@ -3,11 +3,7 @@ import HomeLeft from "./pages/HomeLeft";
 import HomeCenter from "./pages/HomeCenter";
 import HomeRight from "./pages/HomeRight";
 import HomeHeader from "./pages/HomeHeader";
-import {
-  cfpFilterModel,
-  CFProjectSummary,
-  FundingModel,
-} from "../../../models/ProjectModel";
+import { cfpFilterModel, CFProjectSummary } from "../../../models/ProjectModel";
 import { useEffect, useState } from "react";
 import { fetchAllProjects } from "../../../services/ProjectService";
 

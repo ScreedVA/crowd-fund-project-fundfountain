@@ -1,0 +1,23 @@
+.project-user-dashboard-container {
+  height: 88vh;
+  display: grid;
+  grid-template-columns: 80% 20%;
+}
+
+.project-dashboard-left {
+  grid-column: 1;
+}
+
+.project-dashboard-right {
+  grid-column: 2;
+}
+
+.project-dashboard-right h2 {
+  color: white;
+  text-align: center;
+}
+
+.project-dashboard-right .project-list {
+  overflow-y: auto;
+  max-height: calc(88vh - 40px);
+}

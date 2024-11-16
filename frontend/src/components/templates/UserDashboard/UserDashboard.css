@@ -1,0 +1,13 @@
+.user-dashboard-container {
+  height: 100%;
+  display: grid;
+  grid-template-rows: 10% 90%;
+}
+
+.user-dashboard-container > .top-row {
+  grid-row: 1;
+}
+
+.user-dashboard-container > .bottom-row {
+  grid-row: 2;
+}

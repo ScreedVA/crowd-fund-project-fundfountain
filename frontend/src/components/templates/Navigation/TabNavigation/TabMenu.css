@@ -1,0 +1,38 @@
+.tab-menu-body {
+  margin: 0px;
+  padding: 0px;
+  box-sizing: border-box;
+}
+
+.tab-menu-list {
+  margin: 0px;
+  padding: 0px;
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  border-bottom: 2px solid black;
+}
+
+.tab-menu-item {
+  width: 120px;
+  padding: 10px 5px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  border-radius: 3px;
+  border-top: 2px solid black;
+  border-left: 2px solid black;
+  color: #ffffff;
+  background-color: #4a5568;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.tab-menu-item:hover {
+  cursor: pointer;
+  background-color: #00bcd4 !important;
+  font-weight: bold;
+}
+
+.tab-menu-item:active {
+  background-color: #008c9e; /* Darker cyan for the active state */
+}

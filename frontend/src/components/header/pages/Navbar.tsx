@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 
 import "./Navbar.css";
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import { AuthContext } from "../../../services/AuthService";
 
 function Navbar() {
@@ -11,6 +11,8 @@ function Navbar() {
     logout();
     navigate("/login");
   };
+
+  useEffect(() => {}, [signedIn]);
 
   return (
     <>

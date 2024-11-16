@@ -1,8 +1,6 @@
 import "./HomeCenter.css";
-import ProjectList from "../../../templates/ProjectList/ProjectList";
-import { useEffect, useState } from "react";
+import ProjectList from "../../../templates/CFProjects/ProjectList/ProjectList";
 import { CFProjectSummary } from "../../../../models/ProjectModel";
-import { fetchAllProjects } from "../../../../services/ProjectService";
 
 interface HomeCenterProps {
   projectList: CFProjectSummary[];
@@ -12,7 +10,7 @@ const HomeCenter: React.FC<HomeCenterProps> = ({ projectList }) => {
   return (
     <>
       <div className="home-center-container">
-        <ProjectList projectList={projectList} />
+        <ProjectList projectList={projectList} isNavigatorList={true} />
       </div>
     </>
   );

@@ -10,6 +10,7 @@ class UserTable(TimeStampModel):
     username = Column(String(100), unique=True, nullable=False)
     hashed_password = Column(String(255), nullable=False)
     email = Column(String(50), unique=True, nullable=False)
+    biography = Column(String(200))
     first_name = Column(String(100))
     last_name = Column(String(100))
     is_active = Column(Boolean, default=True)
@@ -26,6 +27,7 @@ class UserTable(TimeStampModel):
 
     def update_from_request(self, request: UpdateUserRequest):
         self.username = request.username
+        self.biography = request.biography
         self.first_name = request.first_name
         self.last_name = request.last_name
         self.date_of_birth = datetime.strptime(request.date_of_birth, "%Y-%m-%d")

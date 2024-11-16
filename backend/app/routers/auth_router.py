@@ -41,8 +41,8 @@ def authenticate_user(username: str, password: str, db):
     return user
 
 
-def create_bearer_token(username: str, user_id: int, expires_delta: timedelta):
-    encode = {'sub': username, 'id': user_id}
+def create_bearer_token(username: str, user_id: int, is_admin: bool, expires_delta: timedelta):
+    encode = {'sub': username, 'id': user_id, 'is_admin': is_admin}
     expires = datetime.now(timezone.utc) + expires_delta
     encode.update({'exp': expires})
     token = jwt.encode(encode, SECRET_KEY, algorithm=ALGORITHM)
@@ -55,10 +55,11 @@ async def get_current_user(token: Annotated[str, Depends(oauth2_bearer)]):
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         username: str = payload.get('sub')
         user_id: int = payload.get('id')
+        is_admin: bool = payload.get('is_admin')
         if username is None or user_id is None:
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
                                 detail='Could not validate user.')
-        return {'username': username, 'id': user_id}
+        return {'username': username, 'id': user_id, 'is_admin': is_admin}
     except JWTError:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
                             detail='Could not validate user.')
@@ -83,7 +84,7 @@ async def register_user_for_access_token(db: db_dependency,
         last_name=create_user_request.last_name,
         hashed_password=bcrypt_context.hash(create_user_request.password),
         date_of_birth=datetime.date(datetime.strptime(create_user_request.date_of_birth, "%Y-%m-%d")),
-        is_admin=create_user_request.is_admin,
+        is_admin=False,
         is_active=True
     )
 
@@ -100,8 +101,8 @@ async def register_user_for_access_token(db: db_dependency,
         db.commit()
 
 
-    access_token, access_expires = create_bearer_token(create_user_model.username, create_user_model.id, timedelta(minutes=1))
-    refresh_token, refresh_expires = create_bearer_token(create_user_model.username, create_user_model.id, timedelta(days=7))
+    access_token, _ = create_bearer_token(create_user_model.username, create_user_model.id, create_user_model.is_admin, timedelta(minutes=1))
+    refresh_token, refresh_expires = create_bearer_token(create_user_model.username, create_user_model.id, create_user_model.is_admin, timedelta(days=7))
 
     refresh_token_model: RefreshToken = RefreshToken(token=refresh_token, user_id=create_user_model.id, expires_at=refresh_expires)
     db.add(refresh_token_model)
@@ -117,8 +118,8 @@ async def login_for_access_token(form_data: Annotated[OAuth2PasswordRequestForm,
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
                             detail='Could not validate user.')
 
-    access_token, _ = create_bearer_token(user.username, user.id, timedelta(minutes=30))
-    refresh_token, refresh_expires = create_bearer_token(user.username, user.id, timedelta(days=7))
+    access_token, _ = create_bearer_token(user.username, user.id, user.is_admin, timedelta(minutes=30))
+    refresh_token, refresh_expires = create_bearer_token(user.username, user.id, user.is_admin, timedelta(days=7))
 
     refresh_token_model: RefreshToken = RefreshToken(token=refresh_token, user_id=user.id, expires_at=refresh_expires)
     db.add(refresh_token_model)
@@ -133,12 +134,13 @@ async def refresh_access_token(request_body: RefreshTokenRequest, db: db_depende
         payload =jwt.decode(request_body.refresh_token, SECRET_KEY,algorithms=[ALGORITHM])
         username: str = payload.get('sub')
         user_id: int = payload.get('id')
+        is_admin: bool = payload.get('is_admin')
 
         stored_token = db.query(RefreshToken).filter(RefreshToken.token == request_body.refresh_token).first()
         if not stored_token:
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid refresh token")
         
-        new_access_token, _ = create_bearer_token(username, user_id, timedelta(minutes=1))
+        new_access_token, _ = create_bearer_token(username, user_id, is_admin,  timedelta(minutes=1))
 
         return {'access_token': new_access_token, 'token_type': 'bearer'}
     except JWTError:
@@ -151,13 +153,4 @@ async def get_all_refresh_tokens(db: db_dependency):
     return  db.query(RefreshToken).all()
 
 
-@router.get('/current/checkOwnerOrAdminPermission/{cfp_id}')
-async def check_owner_admin_permissions(db: db_dependency, user: user_dependency, cfp_id: int):
-    
-    if not user:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Cannot retrieve projects from this user")
-    
-    cfp_models: list[CrowdFundProjectTable] = db.query(CrowdFundProjectTable).filter(CrowdFundProjectTable.owner_id == user["id"]).all()
-    if cfp_id in [model.id for model in cfp_models]:
-        return {"canEdit": True}
-    return {"canEdit": False}
+

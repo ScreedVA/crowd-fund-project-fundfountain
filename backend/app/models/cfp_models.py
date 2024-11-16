@@ -4,6 +4,7 @@ from sqlalchemy.orm import relationship
 from enums import FundingModel, ProjectStatus, RevenueType, RevenueStatus
 from schemas import UpdateCFProject
 from datetime import datetime
+
 class CrowdFundProjectTable(TimeStampModel):
     __tablename__ = 'crowd_fund_project'
 

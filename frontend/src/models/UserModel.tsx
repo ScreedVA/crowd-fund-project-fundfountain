@@ -13,9 +13,17 @@ export interface tokenModel {
 interface UserBaseModel {
   username: string;
   email: string;
+  biography: string;
   firstName: string;
   lastName: string;
   dateOfBirth: string;
+}
+
+export interface ReadUserSummaryModel {
+  id: number;
+  username: string;
+  isAdmin: boolean;
+  biography: string;
 }
 
 export interface CreateUserModel extends UserBaseModel {

@@ -52,14 +52,19 @@ async def update_current_user(user_id: int, db: db_dependency, user: user_depend
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Bad update user request body")
     if user_id != user["id"]:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="User not authorized to update this entity")
-    user = db.query(UserTable).filter(UserTable.id == user_id).first();
-    if not user:
+    
+    user_model = db.query(UserTable).filter(UserTable.id == user_id).first();
+    user_model_email_check = db.query(UserTable).filter(UserTable.email == update_user_request.email).first()
+    
+    if user_model_email_check and user_model_email_check.id != user_model.id:
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Email already exists")
+    if not user_model:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
     
-    user.update_from_request(update_user_request)
-    db.add(user)
+    user_model.update_from_request(update_user_request)
+    db.add(user_model)
     db.commit()
-    db.refresh(user)
+    db.refresh(user_model)
 
     if user.bridgeLocations:
         location = db.query(Location).filter(Location.id == user.bridgeLocations[0].location_id).first()

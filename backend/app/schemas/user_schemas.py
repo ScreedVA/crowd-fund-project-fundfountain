@@ -2,19 +2,25 @@ from pydantic import BaseModel, Field
 from typing import Optional
 from .location_schemas import CreateLocationRequest, ReadLocationRequest
 
-class ReadUserSummary(BaseModel):
+class ReadUserSummarySchema(BaseModel):
     id: int
     username: str = Field(min_length=3)
-    is_admin: bool
+    is_admin: bool = Field(alias="isAdmin")
+    biography: Optional[str] 
+
+    class Config:
+        populate_by_name = True
 
 
 class UserBaseModel(BaseModel):
     username: str = Field(min_length=3)
     email: str = Field(min_length=3)
+    biography: str
     first_name: Optional[str] = Field(None, alias="firstName")
     last_name: Optional[str] = Field(None, alias="lastName") 
     date_of_birth: str = Field(..., alias="dateOfBirth")
     is_admin: bool = Field(False, alias="isAdmin")
+    
     class Config:
         populate_by_name = True
 

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { ToasterMessageType } from "../models/ToasterModel";
 
 const useToast = () => {
   const [toast, setToast] = useState({
@@ -7,7 +8,7 @@ const useToast = () => {
     isVisible: false,
   });
 
-  function showToast(message: string, type: string = "success") {
+  function showToast(message: string, type: ToasterMessageType = ToasterMessageType.SUCCESS) {
     setToast({ message, type, isVisible: true });
   }
 

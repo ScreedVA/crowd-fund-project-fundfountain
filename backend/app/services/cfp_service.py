@@ -8,8 +8,9 @@ def transform_to_cfp_summary_schema_from_model(model: CrowdFundProjectTable) -> 
     schema: CrowdFundProjectSummary = CrowdFundProjectSummary(
         id=model.id,
         name=model.name,
-        description=model.description,
+        description=f"{model.description[0:80]}...",
         status=model.status,
+        funding_model=model.funding_model,
         owner_id=model.owner_id
     )
     

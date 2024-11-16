@@ -4,8 +4,8 @@ from typing import Annotated, List
 from sessions import SessionLocal
 from sqlalchemy.orm import Session
 from models import CrowdFundProjectTable, Investment, UserTable
-from schemas import InvestRequest, InvestorShareSummarySchema, BalanceDetailSchema, InvestorBalanceDistributionSchema
-from services import transform_to_balance_details_schema_from_user_model
+from schemas import InvestRequest, InvestorShareSummarySchema, BalanceDetailSchema, InvestorBalanceDistributionToProjectsSchema, ProjectShareDistributionToInvestorsSchema, ReadUserSummarySchema
+from services import transform_to_balance_details_schema_from_user_model, transform_to_user_summary_schema_from_model
 from enums import FundingModel, InvestmentStatus, ProjectStatus
 from .auth_router import get_current_user
 from typing import Annotated
@@ -125,8 +125,8 @@ async def get_investor_to_cfp_share_list(db: db_dependency, user: user_dependenc
         
     return investor_to_cfp_shares
 
-@router.get("/current/balanceDistribution", response_model=List[InvestorBalanceDistributionSchema])
-async def get_investment_distribution(db: db_dependency, user: user_dependency):
+@router.get("/current/list/investorToProjectsBalanceDistribution", response_model=List[InvestorBalanceDistributionToProjectsSchema])
+async def get_investment_balance_distribution(db: db_dependency, user: user_dependency):
     if not user:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="User not authorized, cannot access endpoint")
     
@@ -135,14 +135,15 @@ async def get_investment_distribution(db: db_dependency, user: user_dependency):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not Found")
     
     unique_cfp_id_list: list[int] = list(dict.fromkeys(invest_bridge.crowd_fund_project_id for invest_bridge in user_model.bridge_investments))
-    invest_distribution_schema_list: list[InvestorBalanceDistributionSchema] = []
+    invest_distribution_schema_list: list[InvestorBalanceDistributionToProjectsSchema] = []
     for cfp_id in unique_cfp_id_list:
         cfp_name = db.query(CrowdFundProjectTable).filter(CrowdFundProjectTable.id == cfp_id).first().name
         
 
         invest_distribution_schema_list.append(
-        InvestorBalanceDistributionSchema(
+        InvestorBalanceDistributionToProjectsSchema(
             investorId=user_model.id,
+            investorName=user_model.username,
             projectId=cfp_id,
             projectName=cfp_name,
         )
@@ -151,11 +152,40 @@ async def get_investment_distribution(db: db_dependency, user: user_dependency):
     for invest_distribution_schema in invest_distribution_schema_list:
         for bridge_invest in user_model.bridge_investments:
             if invest_distribution_schema.project_id == bridge_invest.crowd_fund_project_id:
-                invest_distribution_schema.total_investment += bridge_invest.transaction_amount
-                invest_distribution_schema.ratio_percentage += round(bridge_invest.transaction_amount / user_model.balance_spent * 100, 2)
+                invest_distribution_schema.total_investment_against_investor_balance_amount += bridge_invest.transaction_amount
+                invest_distribution_schema.total_investment_against_investor_balance_percentage += round(bridge_invest.transaction_amount / user_model.balance_spent * 100, 2)
 
     return invest_distribution_schema_list
     
+
+@router.get("/list/projectInvestorShareDistribution/byProject/{cfp_id}")
+async def get_investor_share_list_by_project(db: db_dependency, user: user_dependency, cfp_id: int):
+    if not user:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="User not authorized, cannot access endpoint")
+    cfp_model: CrowdFundProjectTable = db.query(CrowdFundProjectTable).filter(CrowdFundProjectTable.id == cfp_id).first()
+    
+    unique_investor_id_list: List[int] = list(dict.fromkeys(invest_bridge.investor_id for invest_bridge in cfp_model.bridge_investments))
+    cfp_share_distribution_schema_list: List[ProjectShareDistributionToInvestorsSchema] = []
+    
+    for investor_id in unique_investor_id_list:
+        investor_username = db.query(UserTable).filter(UserTable.id == investor_id).first().username
+
+        cfp_share_distribution_schema_list.append(
+            ProjectShareDistributionToInvestorsSchema(
+                investorId=investor_id,
+                investorName=investor_username,
+                project_id=cfp_model.id,
+                projectName=cfp_model.name
+            )
+        )
+    for cfp_share_distribution_schema in cfp_share_distribution_schema_list:
+        for invest_bridge in cfp_model.bridge_investments:
+            if invest_bridge.investor_id == cfp_share_distribution_schema.investor_id:
+                cfp_share_distribution_schema.shares_against_project_valuation_amount += invest_bridge.transaction_amount
+                cfp_share_distribution_schema.shares_against_project_valuation_percentage += round(invest_bridge.transaction_amount / cfp_model.valuation * 100, 2)
+    
+    return cfp_share_distribution_schema_list
+
 @router.get("/current/balanceDetails", response_model=BalanceDetailSchema)
 async def get_balance_details(db: db_dependency, user: user_dependency):
     if not user:
@@ -164,6 +194,23 @@ async def get_balance_details(db: db_dependency, user: user_dependency):
     user_model: UserTable = db.query(UserTable).filter(UserTable.id == user["id"]).first()
     
     return transform_to_balance_details_schema_from_user_model(user_model)
+
+@router.get("/list/investor/byProject/{cfp_id}", response_model=List[ReadUserSummarySchema])
+async def get_investor_list(db: db_dependency, user: user_dependency, cfp_id: int):
+    if not user:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="User not authorized, cannot access endpoint")
+    
+    cfp_model: CrowdFundProjectTable = db.query(CrowdFundProjectTable).filter(CrowdFundProjectTable.id == cfp_id).first()
+    unique_investor_id_list: List[int] = list(dict.fromkeys(invest_bridge.investor_id for invest_bridge in cfp_model.bridge_investments))
+    investor_list: List[ReadUserSummarySchema] = []
+
+    for investor_id in unique_investor_id_list:
+        investor_table: ReadUserSummarySchema = transform_to_user_summary_schema_from_model(db.query(UserTable).filter(UserTable.id == investor_id).first())
+
+        investor_list.append(investor_table)
+
+    return investor_list
+
 
 @router.get("/testInvestmentTableByUser/{user_id}")
 async def test_investment_table_by_user(user_id: int, db:db_dependency):

@@ -5,7 +5,7 @@ from .auth_router import get_current_user
 from typing import Annotated, List
 from starlette import status
 from models import UserTable, CrowdFundProjectTable
-from schemas import RevenueEntriesSchema
+from schemas import RevenueEntriesSchema, RevenueSummarySchema
 from datetime import datetime
 from enums import ProjectStatus
 
@@ -25,8 +25,8 @@ db_dependency = Annotated[Session, Depends(get_db)]
 user_dependency = Annotated[dict, Depends(get_current_user)]
 
 
-@router.get("/current/daily/entries/{number_of_days}", response_model=List[RevenueEntriesSchema])
-async def get_revenue_entries(db: db_dependency, user: user_dependency, number_of_days: int = 7):
+@router.get("/entries/list/byInvestor/daily/{number_of_days}", response_model=List[RevenueEntriesSchema])
+async def get_project_revenue_entries_by_investor(db: db_dependency, user: user_dependency, number_of_days: int = 7):
     if not user:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="User not authorized, cannot access endpoint")
     
@@ -44,6 +44,8 @@ async def get_revenue_entries(db: db_dependency, user: user_dependency, number_o
             revenue_entries_schema = RevenueEntriesSchema(
                 project_id=cfp_model.id,
                 project_name=cfp_model.name,
+                project_owner_id=user['id'],
+                project_owner_username=user['username'],
                 dateList=[],
                 amountList=[]
             )
@@ -59,13 +61,78 @@ async def get_revenue_entries(db: db_dependency, user: user_dependency, number_o
                 revenue_entries_schema_list.append(revenue_entries_schema)
     return revenue_entries_schema_list     
 
-@router.get("/current/weekly/distribution")
-async def get_revenue_entries(db: db_dependency, user: user_dependency):
+@router.get("/current/weekly/distribution/byInvestor")
+async def get_project_revenue_distributions_entries(db: db_dependency, user: user_dependency):
     if not user:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="User not authorized, cannot access endpoint")
     
     user_model: UserTable = db.query(UserTable).filter(UserTable.id == user["id"]).first()
     if not user_model:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not Found")
+
+@router.get("/summary/byProject/{cfp_id}", response_model=RevenueSummarySchema)
+async def get_revenue_summary(db: db_dependency, user: user_dependency, cfp_id: int):
+    if not user:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="User not authorized, cannot access endpoint")
+
+    cfp_model: CrowdFundProjectTable = db.query(CrowdFundProjectTable).filter(CrowdFundProjectTable.id == cfp_id).first()
+
+    if not cfp_model:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Crowd Fund Project not Found")
+    
+    if cfp_model.owner_id != user["id"] or not user["is_admin"]:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="User not authorized to access crowd fund project")
+
+    revenue_summary: RevenueSummarySchema = RevenueSummarySchema(
+        project_id=cfp_model.id,
+        project_name=cfp_model.name,
+        project_owner_id=user["id"],
+        project_owner_username=user["username"]
+    )
+
+    for revenue_model in cfp_model.revenue_list:
+        revenue_summary.revenue_aggregate_total += revenue_model.amount
+        revenue_summary.revenue_entry_count += 1
+
+    return revenue_summary
+
+
+@router.get("/entries/byProject/{cfp_id}", response_model=RevenueEntriesSchema)
+async def get_project_revenue_entries_by_project(db: db_dependency, user: user_dependency, cfp_id: int):
+    if not user:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="User not authorized, cannot access endpoint")
+
+    cfp_model: CrowdFundProjectTable = db.query(CrowdFundProjectTable).filter(CrowdFundProjectTable.id == cfp_id).first()
+
+    if not cfp_model:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Crowd Fund Project not Found")
+    
+    if cfp_model.owner_id != user["id"] or not user["is_admin"]:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="User not authorized to access crowd fund project")
+
+    revenue_entries_schema = RevenueEntriesSchema(
+        project_id=cfp_model.id,
+        project_name=cfp_model.name,
+        project_owner_id=user['id'],
+        project_owner_username=user['username'],
+        date_list=[],
+        amount_list=[]
+    )
+
+    revenue_entries_schema.date_list = [revenue_model.distribution_date for revenue_model in cfp_model.revenue_list]
+    revenue_entries_schema.amount_list = [revenue_model.amount for revenue_model in cfp_model.revenue_list]
+
+    return revenue_entries_schema
+
+
+    
+
+
+
+
+
+
+# @router.get("/current/daily/entries/byOwner/{number_of_days}", response_model=List[RevenueEntriesSchema])
+
 
 

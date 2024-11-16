@@ -9,6 +9,7 @@ class CrowdFundProjectSummary(BaseModel):
     name: str = Field(min_length=3)
     description: str = Field(min_length=3)
     status: ProjectStatus
+    funding_model: FundingModel = Field(alias="fundingModel")
     owner_id: int = Field(alias="ownerId")
 
     class Config:
@@ -48,12 +49,6 @@ class CreateCFProject(CrowdFundProjectBaseModel):
 class UpdateCFProject(CrowdFundProjectBaseModel):
     location: Optional[ReadLocationRequest] = Field(None)
 
-class cfpFilterSchema(BaseModel):
-    name: Optional[str] = Field(None)
-    status: Optional[ProjectStatus]  = Field(None)
-    funding_model: Optional[FundingModel] = Field(None, alias="fundingModel")
 
-    class Config:
-        populate_by_name = True
 
 

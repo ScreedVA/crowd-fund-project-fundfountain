@@ -12,10 +12,10 @@ import { API_BASE_DOMAIN } from "./CommonService";
 
 const API_BASE_URL: string = `${API_BASE_DOMAIN}/auth`;
 
-async function refreshAccessToken(): Promise<string> {
+export async function fetchRefreshAccessTokenHttpRequest(): Promise<Response> {
   const responseToken: string | null = getRefreshToken();
 
-  const response = await fetch(`${API_BASE_URL}/refresh`, {
+  const response: Response = await fetch(`${API_BASE_URL}/refresh`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -29,11 +29,11 @@ async function refreshAccessToken(): Promise<string> {
     );
   }
 
-  const data = await response.json();
+  const resData = await response.json();
 
-  setAccessToken(data.access_token);
+  setAccessToken(resData.access_token);
 
-  return data.access_token;
+  return response;
 }
 
 export async function handle401Exception(
@@ -41,7 +41,7 @@ export async function handle401Exception(
   methodType: string,
   body?: any
 ): Promise<any> {
-  const refreshSuccess = await refreshAccessToken();
+  const refreshSuccess = await fetchRefreshAccessTokenHttpRequest();
 
   if (refreshSuccess) {
     let accessToken = getAccessToken();
@@ -99,34 +99,6 @@ export async function LoginForToken(
 
   const resData: tokenModel = await response.json();
   return resData;
-}
-
-export async function fetchCFPResourcePermissionsHttpRequest(
-  projectId: number
-) {
-  let accessToken = getAccessToken();
-  let response: Response = await fetch(
-    `${API_BASE_URL}/current/checkOwnerOrAdminPermission/${projectId}`,
-    {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    }
-  );
-
-  if (!response.ok) {
-    if (response.status == 401) {
-      response = await handle401Exception(
-        `${API_BASE_URL}/current/checkOwnerOrAdminPermission/${projectId}`,
-        "GET"
-      );
-    } else {
-      console.error(`Error: (${response.status} ${response.statusText})`);
-    }
-  }
-
-  return response;
 }
 
 interface AuthContextType {

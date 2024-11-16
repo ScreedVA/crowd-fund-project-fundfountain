@@ -10,9 +10,7 @@ import { getAccessToken } from "./StorageService";
 import { API_BASE_DOMAIN } from "./CommonService";
 const API_BASE_URL: string = `${API_BASE_DOMAIN}/crowd_fund_project`;
 
-export async function fetchAllProjects(
-  filter: cfpFilterModel
-): Promise<Response> {
+export async function fetchAllProjects(filter: cfpFilterModel): Promise<Response> {
   let accessToken = getAccessToken();
 
   const params = new URLSearchParams();
@@ -64,8 +62,7 @@ export async function fetchProjectByIdHttpRequest(projectId: number) {
     }
   }
 
-  const resData: ReadCFProjectModel = await response.json();
-  return resData;
+  return response;
 }
 
 export async function fetchProjectListByCurrentUser() {
@@ -79,10 +76,7 @@ export async function fetchProjectListByCurrentUser() {
 
   if (!response.ok) {
     if (response.status == 401) {
-      response = await handle401Exception(
-        `${API_BASE_URL}/current/owner/list`,
-        "GET"
-      );
+      response = await handle401Exception(`${API_BASE_URL}/current/owner/list`, "GET");
     } else {
       console.error(`Error: (${response.status} ${response.statusText})`);
     }
@@ -94,22 +88,16 @@ export async function fetchProjectListByCurrentUser() {
 
 export async function fetchInvestorProjectListHttpRequest() {
   let accessToken = getAccessToken();
-  let response: Response = await fetch(
-    `${API_BASE_URL}/current/investor/list`,
-    {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    }
-  );
+  let response: Response = await fetch(`${API_BASE_URL}/current/investor/list`, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
 
   if (!response.ok) {
     if (response.status == 401) {
-      response = await handle401Exception(
-        `${API_BASE_URL}/current/investor/list`,
-        "GET"
-      );
+      response = await handle401Exception(`${API_BASE_URL}/current/investor/list`, "GET");
     } else {
       console.error(`Error: (${response.status} ${response.statusText})`);
     }
@@ -118,9 +106,7 @@ export async function fetchInvestorProjectListHttpRequest() {
   return response;
 }
 
-export async function createCFProjectHttpRequest(
-  requestBody: CreateCFProjectModel
-) {
+export async function createCFProjectHttpRequest(requestBody: CreateCFProjectModel) {
   let accessToken = getAccessToken();
   let response: Response = await fetch(`${API_BASE_URL}/`, {
     method: "POST",
@@ -133,11 +119,7 @@ export async function createCFProjectHttpRequest(
 
   if (!response.ok) {
     if (response.status == 401) {
-      response = await handle401Exception(
-        `${API_BASE_URL}`,
-        "POST",
-        requestBody
-      );
+      response = await handle401Exception(`${API_BASE_URL}`, "POST", requestBody);
     } else {
       console.error(`Error: (${response.status} ${response.statusText})`);
     }
@@ -146,10 +128,7 @@ export async function createCFProjectHttpRequest(
   return response;
 }
 
-export async function updateCFProjectHttpRequest(
-  projectId: number,
-  requestBody: UpdateCFProjectModel
-) {
+export async function updateCFProjectHttpRequest(projectId: number, requestBody: UpdateCFProjectModel) {
   let accessToken = getAccessToken();
   let response: Response = await fetch(`${API_BASE_URL}/${projectId}`, {
     method: "PUT",
@@ -162,11 +141,27 @@ export async function updateCFProjectHttpRequest(
 
   if (!response.ok) {
     if (response.status == 401) {
-      response = await handle401Exception(
-        `${API_BASE_URL}/${projectId}`,
-        "PUT",
-        requestBody
-      );
+      response = await handle401Exception(`${API_BASE_URL}/${projectId}`, "PUT", requestBody);
+    } else {
+      console.error(`Error: (${response.status} ${response.statusText})`);
+    }
+  }
+
+  return response;
+}
+
+export async function fetchCFPResourcePermissionsHttpRequest(projectId: number) {
+  let accessToken = getAccessToken();
+  let response: Response = await fetch(`${API_BASE_URL}/current/resourcePermissions/${projectId}`, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+
+  if (!response.ok) {
+    if (response.status == 401) {
+      response = await handle401Exception(`${API_BASE_URL}/current/resourcePermissions/${projectId}`, "GET");
     } else {
       console.error(`Error: (${response.status} ${response.statusText})`);
     }

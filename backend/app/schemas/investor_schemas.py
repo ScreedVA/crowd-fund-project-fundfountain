@@ -20,15 +20,23 @@ class BalanceDetailSchema(BaseModel):
 
     class Config:
         populate_by_name = True
-class InvestorBalanceDistributionSchema(BaseModel):
+
+class InvestorToProjectBridgeBase(BaseModel):
     investor_id: int = Field(alias="investorId")
     project_id: int = Field(alias="projectId")
     project_name: str = Field(alias="projectName")
-    total_investment: int = Field(0, alias="totalInvestment")
-    ratio_percentage: float = Field(0.0, alias="ratioPercentage")
-
+    investor_name: str = Field(alias="investorName")
     class Config:
         populate_by_name = True
+
+
+class InvestorBalanceDistributionToProjectsSchema(InvestorToProjectBridgeBase):
+    total_investment_against_investor_balance_amount: int = Field(0, alias="totalInvestmentAgainstInvestorBalanceAmount")
+    total_investment_against_investor_balance_percentage: float = Field(0.0, alias="totalInvestmentAgainstInvestorBalancePercentage")
+
+class ProjectShareDistributionToInvestorsSchema(InvestorToProjectBridgeBase):
+    shares_against_project_valuation_amount: int = Field(0, alias="sharesAgainstProjectValuationAmount")
+    shares_against_project_valuation_percentage: float = Field(0.0, alias="sharesAgainstProjectValuationPercentage")  
 
 class InvestRequest(BaseModel):
     micro_investment_amount: Optional[int] = Field(None, alias="microInvestmentAmount")

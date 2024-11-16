@@ -2,14 +2,13 @@ from fastapi import APIRouter, Depends, HTTPException
 from sessions import SessionLocal
 from sqlalchemy.orm import Session
 from models import CrowdFundProjectTable, UserTable, Location, CrowdFundProjectLocation
-from schemas import CrowdFundProjectSummary, ReadCrowdFundProject, CreateCFProject, ReadLocationRequest, UpdateCFProject, cfpFilterSchema
-from enums import FundingModel, InvestmentStatus
+from schemas import CrowdFundProjectSummary, ReadCrowdFundProject, CreateCFProject, ReadLocationRequest, UpdateCFProject, cfpFilterSchema, AdminCFPResourcePermissionsSchema
 from services import transform_to_cfp_summary_schema_from_model, transform_to_cfp_details_schema_from_model, validate_project_fields, transform_to_model_from_cfp_create_schema, transform_to_location_model_from_req, transform_to_location_read_schema_from_model
 from .auth_router import get_current_user
-from typing import Annotated, List
+from typing import Annotated
 from starlette import status
 from sqlalchemy import and_
-
+from enums import ProjectStatus
 router = APIRouter(
     prefix='/crowd_fund_project',
     tags=['crowd_fund_project']
@@ -76,7 +75,6 @@ async def read_invested_projects_list(db: db_dependency, user: user_dependency):
 
     return cfp_response
 
-
 @router.get("/{project_id}", response_model=ReadCrowdFundProject)
 async def read_project_by_id(project_id: int, db: db_dependency):
     cfp_model: CrowdFundProjectTable = db.query(CrowdFundProjectTable).filter(CrowdFundProjectTable.id == project_id).first()
@@ -89,8 +87,6 @@ async def read_project_by_id(project_id: int, db: db_dependency):
         cfp_response.location = location_response
 
     return cfp_response
-
-
 
 @router.post("/", status_code=status.HTTP_201_CREATED)
 async def create_project(db: db_dependency, user: user_dependency,  request: CreateCFProject,):
@@ -124,7 +120,6 @@ async def create_project(db: db_dependency, user: user_dependency,  request: Cre
         db.add(bridge_cfp_location_model)
         db.commit()
 
-
 @router.put("/{project_id}", status_code=status.HTTP_201_CREATED)
 async def update_project(request: UpdateCFProject, project_id: int,user: user_dependency, db: db_dependency):
     if not user:
@@ -150,7 +145,27 @@ async def update_project(request: UpdateCFProject, project_id: int,user: user_de
         db.add(location)
         db.commit()
 
+@router.get('/current/resourcePermissions/{cfp_id}', response_model=AdminCFPResourcePermissionsSchema)
+async def check_owner_admin_permissions(db: db_dependency, user: user_dependency, cfp_id: int):
+    
+    if not user:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Cannot retrieve projects from this user")
+    user_model: UserTable = db.query(UserTable).filter(UserTable.id == user["id"]).first()
+    cfp_models_by_authorized_user: list[CrowdFundProjectTable] = db.query(CrowdFundProjectTable).filter(CrowdFundProjectTable.owner_id == user["id"]).all()
+    cfp_model_by_cfp_id: CrowdFundProjectTable = db.query(CrowdFundProjectTable).filter(CrowdFundProjectTable.id == cfp_id).first()
+    
+    is_project_owner = cfp_id in [model.id for model in cfp_models_by_authorized_user]
+    cfp_resource_permissions: AdminCFPResourcePermissionsSchema = AdminCFPResourcePermissionsSchema()
+    print(is_project_owner)
+    if is_project_owner:
+        cfp_resource_permissions.owner_can_edit = True
+    if user_model.is_admin:
+        cfp_resource_permissions.admin_can_edit = True
 
+    if is_project_owner and cfp_model_by_cfp_id.status == ProjectStatus.FUNDED:
+        cfp_resource_permissions.can_report_revenue = True
+
+    return cfp_resource_permissions
 
 
 

@@ -1,0 +1,42 @@
+.user-details-container {
+  background-color: #2a4a6e;
+  font-family: "Roboto", sans-serif;
+  padding: 16px 24px;
+  margin: 30px auto;
+  border-radius: 15px;
+  max-width: 800px;
+  color: white;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  position: relative;
+  z-index: 1;
+}
+
+.user-details-container h1 {
+  margin-bottom: 16px;
+  color: #ffcc00;
+}
+
+.user-details-container h4 {
+  font-size: 1.2rem;
+  font-weight: 400;
+  margin-bottom: 12px;
+}
+
+.user-details-container p {
+  font-size: 1rem;
+  font-weight: 300;
+  margin: 4px 0;
+}
+
+.user-box {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  margin-top: 16px;
+  gap: 16px;
+}
+
+.user-box-field {
+  background-color: #375a7f;
+  padding: 16px;
+  border-radius: 8px;
+}

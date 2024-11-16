@@ -30,7 +30,7 @@ export async function fetchCurrentInvestorShareList(): Promise<Response> {
 export async function fetchCurrentInvestorBalanceDistribution(): Promise<Response> {
   let accessToken = getAccessToken();
   let response: Response = await fetch(
-    `${API_BASE_URL}/current/balanceDistribution`,
+    `${API_BASE_URL}/current/list/investorToProjectsBalanceDistribution`,
     {
       method: "GET",
       headers: {
@@ -42,7 +42,63 @@ export async function fetchCurrentInvestorBalanceDistribution(): Promise<Respons
   if (!response.ok) {
     if (response.status == 401) {
       response = await handle401Exception(
-        `${API_BASE_URL}/current/balanceDistribution`,
+        `${API_BASE_URL}/current/list/investorToProjectsBalanceDistribution`,
+        "GET"
+      );
+    } else {
+      console.error(`Error: (${response.status} ${response.statusText})`);
+    }
+  }
+
+  return response;
+}
+
+export async function fetchProjectShareDistribution(
+  cfp_id: number
+): Promise<Response> {
+  let accessToken = getAccessToken();
+  let response: Response = await fetch(
+    `${API_BASE_URL}/list/projectInvestorShareDistribution/byProject/${cfp_id}`,
+    {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    }
+  );
+
+  if (!response.ok) {
+    if (response.status == 401) {
+      response = await handle401Exception(
+        `${API_BASE_URL}/list/projectInvestorShareDistribution/byProject/${cfp_id}`,
+        "GET"
+      );
+    } else {
+      console.error(`Error: (${response.status} ${response.statusText})`);
+    }
+  }
+
+  return response;
+}
+
+export async function fetchInvestorListHttpRequest(
+  cfp_id: number
+): Promise<Response> {
+  let accessToken = getAccessToken();
+  let response: Response = await fetch(
+    `${API_BASE_URL}/list/investor/byProject/${cfp_id}`,
+    {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    }
+  );
+
+  if (!response.ok) {
+    if (response.status == 401) {
+      response = await handle401Exception(
+        `${API_BASE_URL}/list/investor/byProject/${cfp_id}`,
         "GET"
       );
     } else {

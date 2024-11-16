@@ -10,7 +10,6 @@ interface PieChartProps {
 
 const PieChart: React.FC<PieChartProps> = ({ seriesData }) => {
   const charRef = useRef(null);
-
   useEffect(() => {
     const charInstance = echarts.init(charRef.current);
     const options = {
@@ -64,7 +63,7 @@ const PieChart: React.FC<PieChartProps> = ({ seriesData }) => {
       window.removeEventListener("resize", resizeChart);
       charInstance.dispose();
     };
-  }, []);
+  }, [seriesData]);
   return (
     <>
       <div className="barchart-container">

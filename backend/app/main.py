@@ -1,6 +1,6 @@
 from typing import Annotated
 from fastapi import FastAPI, Depends
-from routers import user_router, auth_router, cfp_router, investor_router, revenue_router
+from routers import user_router, auth_router, cfp_router, investor_router, revenue_router, admin_router
 from sessions import engine, Base, SessionLocal
 from sqlalchemy.orm import Session
 from sqlalchemy import func
@@ -30,6 +30,7 @@ app.include_router(user_router.router)
 app.include_router(cfp_router.router)
 app.include_router(investor_router.router)
 app.include_router(revenue_router.router)
+app.include_router(admin_router.router)
 
 
 def get_db():
@@ -45,9 +46,9 @@ db_dependency = Annotated[Session, Depends(get_db)]
 
 def add_default_data(db: db_dependency):
     default_users = [
-        UserTable(username="alice", email="alice@example.com", hashed_password=auth_router.bcrypt_context.hash("123"), first_name="alice", last_name="doe", is_admin=True,  date_of_birth=datetime.date(datetime.strptime("2000-03-17", "%Y-%m-%d")), bank_account_balance=201000, balance_spent=164000),
-        UserTable(username="bob", email="bob@example.com", hashed_password=auth_router.bcrypt_context.hash("123"), first_name="bob", last_name="tree", date_of_birth=datetime.date(datetime.strptime("1994-10-17", "%Y-%m-%d")), bank_account_balance=97000, balance_spent=134000),
-        UserTable( username="charlie", email="charlie@example.com", hashed_password=auth_router.bcrypt_context.hash("123"), first_name="charlie", last_name="smith", date_of_birth=datetime.date(datetime.strptime("2000-10-17", "%Y-%m-%d")), bank_account_balance=362000, balance_spent=137500) ,
+        UserTable(username="alice", email="alice@example.com", biography="Alice is a mother of two and loves spending weekends hiking with her family. She enjoys gardening and has a soft spot for classic mystery novels.", hashed_password=auth_router.bcrypt_context.hash("123"), first_name="alice", last_name="doe", is_admin=True,  date_of_birth=datetime.date(datetime.strptime("2000-03-17", "%Y-%m-%d")), bank_account_balance=201000, balance_spent=164000),
+        UserTable(username="bob", email="bob@example.com", biography="Bob is a community volunteer and an avid cyclist who enjoys exploring new trails. When he's not outdoors, he loves experimenting with new recipes in the kitchen.",hashed_password=auth_router.bcrypt_context.hash("123"), first_name="bob", last_name="tree", date_of_birth=datetime.date(datetime.strptime("1994-10-17", "%Y-%m-%d")), bank_account_balance=97000, balance_spent=134000),
+        UserTable( username="charlie", email="charlie@example.com", biography="Charlie is a high school teacher who loves her cat, Milo, and spends his evenings painting. He enjoys cozy nights in with a good cup of tea and a favorite movie.",hashed_password=auth_router.bcrypt_context.hash("123"), first_name="charlie", last_name="smith", date_of_birth=datetime.date(datetime.strptime("2000-10-17", "%Y-%m-%d")), bank_account_balance=362000, balance_spent=137500) ,
     ]
 
     default_user_locations = [
@@ -63,17 +64,17 @@ def add_default_data(db: db_dependency):
     ]
 
     default_crowd_fund_projects = [
-        CrowdFundProjectTable(id=1, name="Eco-Friendly Backpack", description="A sustainable, eco-friendly backpack made from recycled materials, designed for urban travelers.", current_fund=9000 + 15000 + 3000, start_date=datetime.strptime("2024-07-01", "%Y-%m-%d"), fund_goal=80000, last_date=datetime.strptime("2024-10-01", "%Y-%m-%d"), unit_price=3000, status=ProjectStatus.ACTIVE, funding_model=FundingModel.FIXED_PRICE, owner_id=1),
+        CrowdFundProjectTable(id=1, name="Woolworth Building Redevelopment", description="This project involves the partial redevelopment of New York’s iconic Woolworth Building. Through Fundrise, developers are raising funds to transform the upper floors into luxury residences while preserving the historic architecture, aiming to deliver a blend of classic and modern New York living", current_fund=9000 + 15000 + 3000, start_date=datetime.strptime("2024-07-01", "%Y-%m-%d"), fund_goal=80000, last_date=datetime.strptime("2024-10-01", "%Y-%m-%d"), unit_price=3000, status=ProjectStatus.ACTIVE, funding_model=FundingModel.FIXED_PRICE, owner_id=1),
 
-        CrowdFundProjectTable(id=2, name="Solar-Powered Portable Charger", description="A compact, solar-powered charger for mobile devices, ideal for outdoor use and emergencies.", fund_goal=100000, unit_price=5000, current_fund=10000 + 12000 + 30000, start_date=datetime.strptime("2024-06-01", "%Y-%m-%d"), last_date=datetime.strptime("2024-10-01", "%Y-%m-%d"),  status=ProjectStatus.ACTIVE, funding_model=FundingModel.MICRO_INVESTMENT, owner_id=2),
+        CrowdFundProjectTable(id=2, name="The Collective Old Oak", description="The Collective Old Oak is currently under development as one of London’s largest co-living spaces. Funded on Crowdcube,", fund_goal=100000, unit_price=5000, current_fund=10000 + 12000 + 30000, start_date=datetime.strptime("2024-06-01", "%Y-%m-%d"), last_date=datetime.strptime("2024-10-01", "%Y-%m-%d"),  status=ProjectStatus.ACTIVE, funding_model=FundingModel.MICRO_INVESTMENT, owner_id=2),
 
-        CrowdFundProjectTable(id=3, name="Smart Home Security System", description="An affordable, AI-powered home security system with remote monitoring and alert features.", current_fund=80000 + 26000 + 55000, fund_goal=200000, unit_price=4000,start_date=datetime.strptime("2024-06-01", "%Y-%m-%d"), last_date=datetime.strptime("2024-10-01", "%Y-%m-%d"),   status=ProjectStatus.ACTIVE, funding_model=FundingModel.MICRO_INVESTMENT, owner_id=3),
+        CrowdFundProjectTable(id=3, name="Campanile Solar Farm", description="Currently raising funds via Lumo, the Campanile Solar Farm project aims to build a large-scale solar farm in Bordeaux.", current_fund=80000 + 26000 + 55000, fund_goal=200000, unit_price=4000,start_date=datetime.strptime("2024-06-01", "%Y-%m-%d"), last_date=datetime.strptime("2024-10-01", "%Y-%m-%d"),   status=ProjectStatus.ACTIVE, funding_model=FundingModel.MICRO_INVESTMENT, owner_id=3),
 
-        CrowdFundProjectTable(id=4, name="Biodegradable Phone Case", description="An eco-friendly phone case made from biodegradable materials, designed to decompose naturally after disposal.", current_fund=15000 + 22000 + 13000, fund_goal=50000, unit_price=2000, start_date=datetime.strptime("2024-07-15", "%Y-%m-%d"), last_date=datetime.strptime("2024-11-15", "%Y-%m-%d"), status=ProjectStatus.FUNDED, funding_model=FundingModel.FIXED_PRICE, owner_id=1),
+        CrowdFundProjectTable(id=4, name="Campanile Solar Farm", description="Currently raising funds via Lumo, the Campanile Solar Farm project aims to build a large-scale solar farm in Bordeaux.", current_fund=15000 + 22000 + 13000, fund_goal=50000, unit_price=2000, start_date=datetime.strptime("2024-07-15", "%Y-%m-%d"), last_date=datetime.strptime("2024-11-15", "%Y-%m-%d"), status=ProjectStatus.FUNDED, funding_model=FundingModel.FIXED_PRICE, owner_id=1),
 
-        CrowdFundProjectTable(id=5, name="Portable Water Purifier Bottle", description="A compact water purifier bottle that filters water on-the-go, ideal for travelers and adventurers.", current_fund=20000 + 37000 + 18000, fund_goal=75000, unit_price=2500, start_date=datetime.strptime("2024-08-01", "%Y-%m-%d"), last_date=datetime.strptime("2024-12-01", "%Y-%m-%d"), status=ProjectStatus.FUNDED, funding_model=FundingModel.MICRO_INVESTMENT, owner_id=5),
+        CrowdFundProjectTable(id=5, name="Streets of Detroit", description="Through Mainvest, developers are seeking funding to revitalize small residential and commercial properties across Detroit.", current_fund=20000 + 37000 + 18000, fund_goal=75000, unit_price=2500, start_date=datetime.strptime("2024-08-01", "%Y-%m-%d"), last_date=datetime.strptime("2024-12-01", "%Y-%m-%d"), status=ProjectStatus.FUNDED, funding_model=FundingModel.MICRO_INVESTMENT, owner_id=2),
 
-        CrowdFundProjectTable(id=6, name="Smart Indoor Garden", description="A self-watering indoor garden with automated light and climate control, designed to grow fresh herbs and vegetables at home.", current_fund=30000 + 22000 + 68000, fund_goal=120000, unit_price=3500, start_date=datetime.strptime("2024-05-15", "%Y-%m-%d"), last_date=datetime.strptime("2024-09-15", "%Y-%m-%d"), status=ProjectStatus.FUNDED, funding_model=FundingModel.MICRO_INVESTMENT, owner_id=6)
+        CrowdFundProjectTable(id=6, name="Wynwood Garage", description="In the Wynwood Arts District, developers are crowdfunding on Crowdstreet to build the Wynwood Garage, a mixed-use facility with parking, retail, and public art spaces.", current_fund=30000 + 22000 + 68000, fund_goal=120000, unit_price=3500, start_date=datetime.strptime("2024-05-15", "%Y-%m-%d"), last_date=datetime.strptime("2024-09-15", "%Y-%m-%d"), status=ProjectStatus.FUNDED, funding_model=FundingModel.MICRO_INVESTMENT, owner_id=3)
     ]
 
     default_cfp_locations = [
