@@ -1,4 +1,4 @@
-import { RevenueEntriesModel } from "../models/RevenueModel";
+import { RevenueEntryListModel } from "../models/RevenueModel";
 
 export const API_BASE_DOMAIN: string = "http://127.0.0.1:8000";
 
@@ -7,12 +7,6 @@ export function isObjectAnyFieldNotEmpty(object: Object): boolean {
 }
 
 export function isLocationField(field: any) {
-  const isLocationField = [
-    "street",
-    "plz",
-    "city",
-    "country",
-    "houseNumber",
-  ].includes(field);
+  const isLocationField = ["street", "plz", "city", "country", "houseNumber"].includes(field);
   return isLocationField;
 }

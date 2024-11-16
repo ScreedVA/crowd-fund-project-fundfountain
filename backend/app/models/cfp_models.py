@@ -24,9 +24,11 @@ class CrowdFundProjectTable(TimeStampModel):
     owner_id = Column(Integer, ForeignKey('user.id'))
 
     user = relationship("UserTable", back_populates="crowd_fund_projects")
-    bridge_locations = relationship("CrowdFundProjectLocation", back_populates="crowd_fund_project")
-    bridge_investments = relationship("Investment", back_populates="crowd_fund_project")
-    revenue_list = relationship('RevenueTable', back_populates='crowd_fund_project')
+    revenue_list = relationship('RevenueEntryTable', back_populates='crowd_fund_project')
+
+    # Bridge Relations
+    bridge_locations = relationship("CrowdFundProjectLocationBridge", back_populates="crowd_fund_project")
+    bridge_investments = relationship("InvestmentBridge", back_populates="crowd_fund_project")
 
     # Fire if factors (fund_goal/unit_price) change
     def update_valuation(self):
@@ -69,11 +71,11 @@ class CrowdFundProjectTable(TimeStampModel):
         self.name = request.name
         self.description = request.description
 
-class RevenueTable(TimeStampModel):
+class RevenueEntryTable(TimeStampModel):
 
-    __tablename__ = "revenue"
+    __tablename__ = "revenue_entry"
 
-    amount = Column(Integer, default=0)
+    amount = Column(Numeric(precision=3, scale=2), default=0.0)
     distribution_date = Column(Date, nullable=False, default=datetime.today)
     revenue_type = Column(SQLALchemyEnum(RevenueType), nullable=False)
     revenue_status = Column(SQLALchemyEnum(RevenueStatus), nullable=False)
@@ -81,8 +83,10 @@ class RevenueTable(TimeStampModel):
     crowd_fund_project_id = Column(Integer, ForeignKey('crowd_fund_project.id'))
 
     crowd_fund_project = relationship("CrowdFundProjectTable", back_populates="revenue_list")
-    bridge_revenue_distributions = relationship("RevenueDistribution", back_populates="revenue")
 
+    # Bridge Relations
+    bridge_revenue_distributions = relationship("RevenueDistributionBridge", back_populates="revenue_entry")
+    bridge_revenue_entry_files = relationship("RevenueEntryFileBridge", back_populates="revenue_entry")
 
 
 

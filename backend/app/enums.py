@@ -29,3 +29,10 @@ class UserPermissions(Enum):
     CAN_EDIT = "CAN_EDIT"
     CAN_DELETE = "CAN_DELETE"
     CAN_INSERT = "CAN_INSERT"
+
+
+# Filter Enums
+
+class ContentDispositionFilter(str, Enum):
+    ATTACHTMENT = "attachment"
+    INLINE = "inline"

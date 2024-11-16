@@ -1,21 +1,22 @@
+import { RevenueEntryModel } from "../../../../models/RevenueModel";
 import RevenueListItem from "./pages/RevenueListItem";
 import "./RevenueList.css";
 interface RevenueListProps {
-  revenueDateAmountList: { date: string; amount: number }[];
+  revenueEntryList: RevenueEntryModel[];
   liCustomWidthpx: string;
 }
 
-const RevenueList: React.FC<RevenueListProps> = ({ revenueDateAmountList, liCustomWidthpx }) => {
+const RevenueList: React.FC<RevenueListProps> = ({ revenueEntryList, liCustomWidthpx }) => {
   return (
     <>
       <ul className="revenue-list-container">
-        {revenueDateAmountList.map((value, index) => (
+        {revenueEntryList.map((value, index) => (
           <li
-            key={index}
+            key={value.id}
             style={{ width: liCustomWidthpx ? liCustomWidthpx : "80%" }}
             className="revenue-list-item-container"
           >
-            <RevenueListItem amount={value.amount} date={value.date} />
+            <RevenueListItem amount={value.amount} date={value.date} fileIdList={value.fileIdList} />
           </li>
         ))}
       </ul>

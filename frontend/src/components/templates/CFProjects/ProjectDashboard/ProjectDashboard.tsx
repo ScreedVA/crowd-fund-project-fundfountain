@@ -89,12 +89,13 @@ const ProjectDashboard: React.FC<ProjectDashboardProps> = ({ projectId, tabMenuC
     }
 
     if (resourcePermissions?.canReportRevenue && !options.includes(CFPDashboardTabMenuOptions.REVENUE_DASHBOARD)) {
-      options.push(CFPDashboardTabMenuOptions.REVENUE_DASHBOARD);
+      setOptions((prevValue) => [...prevValue, CFPDashboardTabMenuOptions.REVENUE_DASHBOARD]);
     } else if (
       !resourcePermissions?.canReportRevenue &&
       options.includes(CFPDashboardTabMenuOptions.REVENUE_DASHBOARD)
     ) {
-      options.splice(options.indexOf(CFPDashboardTabMenuOptions.REVENUE_DASHBOARD), 1);
+      const updatedOptions = options.filter((option) => option !== CFPDashboardTabMenuOptions.REVENUE_DASHBOARD);
+      setOptions(updatedOptions);
     }
 
     // Reset Tab Selected Index

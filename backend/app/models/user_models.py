@@ -19,11 +19,13 @@ class UserTable(TimeStampModel):
     bank_account_balance = Column(Integer, default=0)
     balance_spent = Column(Integer, default=0)
 
-    bridgeLocations = relationship("UserLocation", back_populates="user")
     refresh_token = relationship('RefreshToken', back_populates='user')
     crowd_fund_projects = relationship('CrowdFundProjectTable', back_populates='user')
-    bridge_investments = relationship("Investment", back_populates="investor")
-    bridge_revenue_distributions = relationship("RevenueDistribution", back_populates="investor")
+
+    # Bridge Relations
+    bridgeLocations = relationship("UserLocationBridge", back_populates="user")
+    bridge_investments = relationship("InvestmentBridge", back_populates="investor")
+    bridge_revenue_distributions = relationship("RevenueDistributionBridge", back_populates="investor")
 
     def update_from_request(self, request: UpdateUserRequest):
         self.username = request.username

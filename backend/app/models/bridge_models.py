@@ -4,8 +4,9 @@ from sqlalchemy.orm import relationship
 from .base_models import TimeStampModel
 from enums import InvestmentStatus
 from datetime import datetime
-class UserLocation(Base):
-    __tablename__ = "user_location"
+
+class UserLocationBridge(Base):
+    __tablename__ = "user_location_bridge"
 
     user_id = Column(Integer, ForeignKey("user.id"), primary_key=True)
     location_id = Column(Integer, ForeignKey("location.id"), primary_key=True)
@@ -14,8 +15,8 @@ class UserLocation(Base):
     location = relationship("Location", back_populates="bridgeUsers")
 
 
-class CrowdFundProjectLocation(Base):
-    __tablename__ = 'crowd_fund_project_location'
+class CrowdFundProjectLocationBridge(Base):
+    __tablename__ = 'crowd_fund_project_location_bridge'
 
     crowd_fund_project_id = Column(Integer, ForeignKey("crowd_fund_project.id"), primary_key=True)
     location_id = Column(Integer, ForeignKey("location.id"), primary_key=True)
@@ -25,8 +26,8 @@ class CrowdFundProjectLocation(Base):
     location = relationship("Location", back_populates="bridgeCrowdFundProjects")
 
 # Bridge table for CrowdFundProject - User
-class Investment(TimeStampModel):
-    __tablename__ = 'investment'
+class InvestmentBridge(TimeStampModel):
+    __tablename__ = 'investment_bridge'
 
     crowd_fund_project_id = Column(Integer, ForeignKey('crowd_fund_project.id'))
     investor_id = Column(Integer, ForeignKey('user.id'))
@@ -39,15 +40,31 @@ class Investment(TimeStampModel):
     crowd_fund_project = relationship("CrowdFundProjectTable", back_populates="bridge_investments")
     investor = relationship("UserTable", back_populates="bridge_investments")
 
-class RevenueDistribution(TimeStampModel):
-    __tablename__ = 'revenue_distribution'
+class RevenueDistributionBridge(TimeStampModel):
+    __tablename__ = 'revenue_distribution_bridge'
 
     amount = Column(Integer, nullable=False)
     distribution_date = Column(Date, nullable=False, default=datetime.today)
 
-    revenue_id = Column(Integer, ForeignKey('revenue.id'))
+    revenue_entry_id = Column(Integer, ForeignKey('revenue_entry.id'))
     investor_id = Column(Integer, ForeignKey('user.id'))
 
-    revenue = relationship("RevenueTable", back_populates="bridge_revenue_distributions")
+    revenue_entry = relationship("RevenueEntryTable", back_populates="bridge_revenue_distributions")
     investor = relationship("UserTable", back_populates="bridge_revenue_distributions")
 
+# File Bridges
+
+class RevenueEntryFileBridge(Base):
+    __tablename__ = 'revenue_entry_file_bridge'
+
+    stored_file_id = Column(Integer, ForeignKey('stored_file.id'), primary_key=True)
+    revenue_id = Column(Integer, ForeignKey('revenue_entry.id'), primary_key=True)
+
+    stored_file = relationship("StoredFile", back_populates="bridge_revenue_entry_files")
+    revenue_entry = relationship("RevenueEntryTable", back_populates="bridge_revenue_entry_files")
+
+
+
+
+
+    

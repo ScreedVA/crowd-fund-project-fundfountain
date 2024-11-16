@@ -1,5 +1,5 @@
 from schemas import InvestorShareSummarySchema, BalanceDetailSchema
-from models import Investment, UserTable, CrowdFundProjectTable
+from models import InvestmentBridge, UserTable, CrowdFundProjectTable
 
 
 def transform_to_balance_details_schema_from_user_model(model: UserTable) -> BalanceDetailSchema:

@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sessions import SessionLocal
 from sqlalchemy.orm import Session
-from models import CrowdFundProjectTable, UserTable, Location, CrowdFundProjectLocation
+from models import CrowdFundProjectTable, UserTable, Location, CrowdFundProjectLocationBridge
 from schemas import CrowdFundProjectSummary, ReadCrowdFundProject, CreateCFProject, ReadLocationRequest, UpdateCFProject, cfpFilterSchema, AdminCFPResourcePermissionsSchema
 from services import transform_to_cfp_summary_schema_from_model, transform_to_cfp_details_schema_from_model, validate_project_fields, transform_to_model_from_cfp_create_schema, transform_to_location_model_from_req, transform_to_location_read_schema_from_model
 from .auth_router import get_current_user
@@ -112,7 +112,7 @@ async def create_project(db: db_dependency, user: user_dependency,  request: Cre
         db.commit()
         db.refresh(location_model)
 
-        bridge_cfp_location_model = CrowdFundProjectLocation(
+        bridge_cfp_location_model = CrowdFundProjectLocationBridge(
             crowd_fund_project_id=cfp_model.id,
             location_id=location_model.id
         )

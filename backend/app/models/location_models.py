@@ -12,8 +12,8 @@ class Location(TimeStampModel):
     country = Column(String(255))
     house_number = Column(String(100))
 
-    bridgeUsers = relationship("UserLocation", back_populates="location")
-    bridgeCrowdFundProjects = relationship("CrowdFundProjectLocation", back_populates="location")
+    bridgeUsers = relationship("UserLocationBridge", back_populates="location")
+    bridgeCrowdFundProjects = relationship("CrowdFundProjectLocationBridge", back_populates="location")
 
     def update_from_request(self, request:UpdateLocationRequest):
         self.street = request.street

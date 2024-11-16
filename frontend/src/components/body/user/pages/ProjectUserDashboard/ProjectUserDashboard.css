@@ -1,7 +1,7 @@
 .project-user-dashboard-container {
   height: 88vh;
   display: grid;
-  grid-template-columns: 80% 20%;
+  grid-template-columns: 75% 25%;
 }
 
 .project-dashboard-left {
@@ -19,5 +19,5 @@
 
 .project-dashboard-right .project-list {
   overflow-y: auto;
-  max-height: calc(88vh - 40px);
+  /* max-height: calc(88vh - 40px); */
 }

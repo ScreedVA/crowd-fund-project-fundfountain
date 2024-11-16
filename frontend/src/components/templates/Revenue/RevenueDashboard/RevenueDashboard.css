@@ -3,3 +3,13 @@
   grid-template-rows: 10% 90%;
   height: 100%;
 }
+
+.revenue-dashboard-container .top-row {
+  margin-bottom: 20px;
+  z-index: 1;
+}
+
+.overflow-wrapper {
+  overflow-y: auto;
+  max-height: calc(88vh - 120px);
+}

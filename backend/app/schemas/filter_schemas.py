@@ -1,6 +1,6 @@
 from pydantic import BaseModel, Field
 from typing import Optional
-from enums import ProjectStatus, FundingModel
+from enums import ProjectStatus, FundingModel, ContentDispositionFilter
 
 class filterBaseModel(BaseModel):
     name: Optional[str] = Field(None)
@@ -16,3 +16,7 @@ class cfpFilterSchema(filterBaseModel):
 
 class userFilterSchema(filterBaseModel):
     pass
+
+
+class ContentDistpositionFilterSchema(BaseModel):
+    content_disposition: ContentDispositionFilter = Field(None)

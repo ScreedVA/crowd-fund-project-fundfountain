@@ -8,7 +8,7 @@ from jose import jwt, JWTError
 from sqlalchemy.orm import Session
 from sessions import SessionLocal
 from schemas.user_schemas import CreateUserRequest, Token, RefreshTokenRequest
-from models import UserTable, UserLocation, RefreshToken, CrowdFundProjectTable
+from models import UserTable, UserLocationBridge, RefreshToken, CrowdFundProjectTable
 from services import transform_to_location_model_from_req
 
 
@@ -96,7 +96,7 @@ async def register_user_for_access_token(db: db_dependency,
         db.add(create_location_model)
         db.commit()
         db.refresh(create_location_model)
-        create_user_location_model = UserLocation(user_id=create_user_model.id, location_id=create_location_model.id)
+        create_user_location_model = UserLocationBridge(user_id=create_user_model.id, location_id=create_location_model.id)
         db.add(create_user_location_model)
         db.commit()
 

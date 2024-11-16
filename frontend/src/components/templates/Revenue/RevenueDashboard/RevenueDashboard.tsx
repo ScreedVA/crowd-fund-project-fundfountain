@@ -3,7 +3,7 @@ import TabMenu from "../../Navigation/TabNavigation/TabMenu";
 import "./RevenueDashboard.css";
 import { TabMenuCustomConfig } from "../../../../models/TabMenuModel";
 import { fetchRevenueEntries, fetchRevenueSummary } from "../../../../services/RevenueService";
-import { RevenueEntriesModel, RevenueSummaryModel } from "../../../../models/RevenueModel";
+import { RevenueEntryListModel, RevenueEntryModel, RevenueSummaryModel } from "../../../../models/RevenueModel";
 import { RevenueDashboardTabMenuOptions } from "../../../../models/TabMenuModel";
 import RevenueDetails from "../RevenueDetails/RevenueDetails";
 import RevenueList from "../RevenueList/RevenueList";
@@ -19,9 +19,11 @@ const RevenueDashboard: React.FC<RevenueDashboardProps> = ({ tabMenuCustomConfig
     RevenueDashboardTabMenuOptions.ENTRY_LIST,
     RevenueDashboardTabMenuOptions.REPORT_REVENUE,
   ]);
+
   const [tabSelectedIndex, setTabSelectedIndex] = useState<number>(0);
   const [revenueSummary, setRevenueSummary] = useState<RevenueSummaryModel>();
-  const [revenueEntries, setRevenueEntries] = useState<RevenueEntriesModel>();
+  const [revenueEntries, setRevenueEntries] = useState<RevenueEntryModel[]>();
+
   async function initRevenueSummary() {
     const response: Response = await fetchRevenueSummary(projectId);
     const revenueSummaryResponse: RevenueSummaryModel = await response.json();
@@ -30,7 +32,7 @@ const RevenueDashboard: React.FC<RevenueDashboardProps> = ({ tabMenuCustomConfig
 
   async function initRevenueEntries() {
     const response: Response = await fetchRevenueEntries(projectId);
-    const revenueEntriesResponse: RevenueEntriesModel = await response.json();
+    const revenueEntriesResponse: RevenueEntryModel[] = await response.json();
     setRevenueEntries(revenueEntriesResponse);
   }
 
@@ -57,16 +59,12 @@ const RevenueDashboard: React.FC<RevenueDashboardProps> = ({ tabMenuCustomConfig
           )}
           {tabSelectedIndex == options.indexOf(RevenueDashboardTabMenuOptions.ENTRY_LIST) && revenueEntries && (
             <div className="overflow-wrapper">
-              <RevenueList
-                liCustomWidthpx="40%"
-                revenueDateAmountList={revenueEntries.dateList.map((date, index) => ({
-                  date: date,
-                  amount: revenueEntries.amountList[index],
-                }))}
-              />
+              <RevenueList liCustomWidthpx="40%" revenueEntryList={revenueEntries} />
             </div>
           )}
-          {tabSelectedIndex == options.indexOf(RevenueDashboardTabMenuOptions.REPORT_REVENUE) && <RevenueReportForm />}
+          {tabSelectedIndex == options.indexOf(RevenueDashboardTabMenuOptions.REPORT_REVENUE) && (
+            <RevenueReportForm projectId={projectId} />
+          )}
         </div>
       </div>
     </>

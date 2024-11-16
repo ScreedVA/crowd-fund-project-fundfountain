@@ -63,3 +63,24 @@ export async function fetchRevenueEntries(cfp_id: number): Promise<Response> {
 
   return response;
 }
+
+export async function postRevenueEntryHttpRequest(projectId: number, requestBody: FormData): Promise<Response> {
+  let accessToken = getAccessToken();
+  let response: Response = await fetch(`${API_BASE_URL}/upload-revenue-report/${projectId}`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+    body: requestBody,
+  });
+
+  if (!response.ok) {
+    if (response.status == 401) {
+      response = await handle401Exception(`${API_BASE_URL}/upload-revenue-report/${projectId}`, "POST", requestBody);
+    } else {
+      console.error(`Error: (${response.status} ${response.statusText})`);
+    }
+  }
+
+  return response;
+}

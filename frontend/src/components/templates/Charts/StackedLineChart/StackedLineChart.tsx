@@ -1,14 +1,12 @@
 import "./StackedLineChart.css";
 import * as echarts from "echarts";
 import { useEffect, useRef } from "react";
-import { RevenueEntriesModel } from "../../../../models/RevenueModel";
+import { RevenueEntryListModel } from "../../../../models/RevenueModel";
 interface StackedLineChartProps {
-  revenueEntriesList: RevenueEntriesModel[];
+  revenueEntriesList: RevenueEntryListModel[];
 }
 
-const StackedLineChart: React.FC<StackedLineChartProps> = ({
-  revenueEntriesList,
-}) => {
+const StackedLineChart: React.FC<StackedLineChartProps> = ({ revenueEntriesList }) => {
   const charRef = useRef(null);
 
   useEffect(() => {

@@ -159,27 +159,16 @@ const ProjectDetails: React.FC<ProjectDetailsProps> = ({ projectId, projectDetai
 
         <div className="project-box">
           {/* Edit/Invest Buttun */}
-          {!isUserPath ? (
-            <>
-              {projectDetails?.status == ProjectStatus.ACTIVE && (
-                <div className="">
-                  <button className="project-details-btn" onClick={handleInvestClick}>
-                    <a>Invest</a>
-                  </button>
-                </div>
-              )}
-            </>
-          ) : (
-            <>
-              {resourcePermissions?.canEdit && (
-                <div className="">
-                  <button className="project-details-btn" onClick={handleEditClick}>
-                    <a>Edit</a>
-                  </button>
-                </div>
-              )}
-            </>
-          )}
+
+          <>
+            {projectDetails?.status == ProjectStatus.ACTIVE && (
+              <div className="">
+                <button className="project-details-btn" onClick={handleInvestClick}>
+                  <a>Invest</a>
+                </button>
+              </div>
+            )}
+          </>
         </div>
       </div>
       {/* <div className="project-box"></div> */}

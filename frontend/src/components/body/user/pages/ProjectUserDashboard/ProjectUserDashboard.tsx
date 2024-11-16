@@ -24,7 +24,9 @@ function ProjectUserDashboard() {
   return (
     <>
       <div className="project-user-dashboard-container">
-        <div className="project-dashboard-left">{<ProjectDashboard projectId={selectedProjectId} />}</div>
+        {selectedProjectId && (
+          <div className="project-dashboard-left">{<ProjectDashboard projectId={selectedProjectId} />}</div>
+        )}
         <div className="project-dashboard-right">
           <h2 style={{ textAlign: "center" }}>Project List</h2>
           <div className="project-list">

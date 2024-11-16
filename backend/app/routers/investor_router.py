@@ -3,7 +3,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from typing import Annotated, List
 from sessions import SessionLocal
 from sqlalchemy.orm import Session
-from models import CrowdFundProjectTable, Investment, UserTable
+from models import CrowdFundProjectTable, InvestmentBridge, UserTable
 from schemas import InvestRequest, InvestorShareSummarySchema, BalanceDetailSchema, InvestorBalanceDistributionToProjectsSchema, ProjectShareDistributionToInvestorsSchema, ReadUserSummarySchema
 from services import transform_to_balance_details_schema_from_user_model, transform_to_user_summary_schema_from_model
 from enums import FundingModel, InvestmentStatus, ProjectStatus
@@ -69,7 +69,7 @@ async def invest(project_id: int, request: InvestRequest, db: db_dependency, use
     
 
     # Initialize Investment Table
-    investment_bridge_model: Investment = Investment(
+    investment_bridge_model: InvestmentBridge = InvestmentBridge(
         crowd_fund_project_id=cfp_model.id,
         investor_id=user_model.id,
         status=InvestmentStatus.PAID,
@@ -214,9 +214,9 @@ async def get_investor_list(db: db_dependency, user: user_dependency, cfp_id: in
 
 @router.get("/testInvestmentTableByUser/{user_id}")
 async def test_investment_table_by_user(user_id: int, db:db_dependency):
-    return db.query(Investment).filter(Investment.investor_id == user_id).all()
+    return db.query(InvestmentBridge).filter(InvestmentBridge.investor_id == user_id).all()
 
 @router.get("/testInvestmentTableByProject/{project_id}")
 async def test_investment_table_by_project(project_id: int, db:db_dependency):
-    return db.query(Investment).filter(Investment.crowd_fund_project_id == project_id).all()
+    return db.query(InvestmentBridge).filter(InvestmentBridge.crowd_fund_project_id == project_id).all()
 

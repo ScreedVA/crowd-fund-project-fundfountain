@@ -12,7 +12,7 @@ import {
 } from "../../../../../services/InvestorService";
 import StackedLineChart from "../../../../templates/Charts/StackedLineChart/StackedLineChart";
 import { fetchRevenueEntriesList } from "../../../../../services/RevenueService";
-import { RevenueEntriesModel } from "../../../../../models/RevenueModel";
+import { RevenueEntryListModel } from "../../../../../models/RevenueModel";
 import ProjectList from "../../../../templates/CFProjects/ProjectList/ProjectList";
 import { CFProjectSummary } from "../../../../../models/ProjectModel";
 import { fetchInvestorProjectListHttpRequest } from "../../../../../services/ProjectService";
@@ -20,7 +20,7 @@ import TabMenu from "../../../../templates/Navigation/TabNavigation/TabMenu";
 function InvestorPortfolio() {
   const [barchartData, setBarchartData] = useState<InvestorShareSummaryModel[]>();
   const [piechartData, setPiechartData] = useState<InvestorBalanceDistributionToProjectsModel[]>();
-  const [stackedLinechartData, setStackedLinechartData] = useState<RevenueEntriesModel[]>();
+  const [stackedLinechartData, setStackedLinechartData] = useState<RevenueEntryListModel[]>();
   const [investorProjectList, setInvestorProjectList] = useState<CFProjectSummary[]>();
   const [selectedIndex, setSelectedIndex] = useState(0);
   const selectOptions: string[] = ["Shares Owned", "Investment Distribution", "Project Revenue History"];
@@ -39,7 +39,7 @@ function InvestorPortfolio() {
 
   async function initStackedLinechartData() {
     const response: Response = await fetchRevenueEntriesList(7);
-    const revenueEntriesList: RevenueEntriesModel[] = await response.json();
+    const revenueEntriesList: RevenueEntryListModel[] = await response.json();
     setStackedLinechartData(revenueEntriesList);
   }
 
